@@ -2,6 +2,7 @@
 #define __ROBOT_C__
 
 #define LIFT_LOW_HEIGHT 3920
+#define LIFT_LITTLE_BIT_HEIGHT 3000
 #define LIFT_MID_HEIGHT 1900
 #define LIFT_HIGH_HEIGHT 1500
 
@@ -284,7 +285,7 @@ task GyroTask
   while (1==1)
   {
     GyroUpdateFiltered(&gyroLP, 0.003);
-    wait1MSec(3);
+    wait1Msec(3);
   }
 }
 

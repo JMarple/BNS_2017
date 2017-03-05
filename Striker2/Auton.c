@@ -19,18 +19,76 @@
 #define ROTATE_RIGHT -90
 #define ROTATE_LEFT 90
 
-
 void brake(int dir)
 {
   drivePower(-20*dir);
-  Wait1MSec(250);
+  wait1Msec(250);
   drivePower(0);
 }
 
+void driveStraight(int distance, int speed)
+{
+  resetEncoders();
+
+  while (1==1)
+  {
+    leftDrive(speed);
+    rightDrive(speed);
+
+    int lEnc = getLeftEncoder();
+    int rEnc = getRightEncoder();
+
+    if (fabs(lEnc + rEnc) / 2 > distance) break;
+  }
+}
+
+void driveCorrectedSmoothTurn(
+	float startSpeed,
+	float maxSpeed,
+	float targetAngle,
+	float undershootAmount = 20)
+{
+  float turningAmount = limitTo180(targetAngle - GyroGetAngle());
+
+  // Parameters
+  int quitAngle = GyroGetAngle() + turningAmount - undershootAmount * sgn(turningAmount);
+  float speed = startSpeed;
+  const int accel_amount = 2;
+  int accel_direction = sgn(maxSpeed - startSpeed);
+
+  while (1==1)
+  {
+	  // Break if close enough to target angle
+	  float posError =
+	    limitTo180(quitAngle - GyroGetAngle());
+
+	  if (abs(posError) < 3) break;
+
+	  speed += accel_amount * accel_direction;
+
+	  if (speed * accel_direction > maxSpeed * accel_direction) speed = maxSpeed;
+
+	  if (sgn(turningAmount))
+	  {
+	    leftDrive(speed);
+      rightDrive(-20*sgn(speed));
+	  }
+	  else
+    {
+      leftDrive(-20 * sgn(speed));
+      rightDrive(speed);
+    }
+
+    delay(10);
+	}
+}
+
+
+
 int driveSmoothTurn(
-    float speed,
-    float targetAngularVelocity,
-    float targetAngle)
+float speed,
+float targetAngularVelocity,
+float targetAngle)
 {
   struct PID velPID;
   PIDInit(&velPID, 0.02, 0, 0);
@@ -41,7 +99,7 @@ int driveSmoothTurn(
   {
     // Break if close enough to target angle
     float posError =
-      targetAngle - limitTo180(GyroGetAngle());
+    targetAngle - limitTo180(GyroGetAngle());
 
     if (abs(posError) < 3) break;
 
@@ -84,19 +142,19 @@ void turnRight(float speed, float angVel, float targetAngle, int type = 0)
 }
 
 int driveHoldHeading(
-  int distance,
-  int maxSpeed,
-  float targetAngle,
-  int type = TYPE_FORWARD,
-  int accel_type = ACCEL_NONE,
-  int accel_startspeed = 0)
+int distance,
+int maxSpeed,
+float targetAngle,
+int type = TYPE_FORWARD,
+int accel_type = ACCEL_NONE,
+int accel_startspeed = 0)
 {
   if (distance < 0) distance = -distance;
 
   resetEncoders();
 
   struct PID headingpid;
-  PIDInit(&headingpid, 4, 0, 0);
+  PIDInit(&headingpid, 3, 0, 0);
 
   int speed = maxSpeed;
 
@@ -105,57 +163,57 @@ int driveHoldHeading(
 
   while (1==1)
   {
-	  float error = limitTo180(targetAngle - GyroGetAngle());
-		float pidResult = PIDUpdate(&headingpid, error, 0.01);
+    float error = limitTo180(targetAngle - GyroGetAngle());
+    float pidResult = PIDUpdate(&headingpid, error, 0.01);
 
-	  // Acceleration code.
-	  if (accel_type != ACCEL_NONE)
-	  {
-	    if (accel_startspeed < maxSpeed)
-	    {
-	      speed += accel_type;
-	      if (speed > maxSpeed) speed = maxSpeed;
-	    }
-	    else
-	    {
-	      speed -= accel_type;
-	      if (speed < maxSpeed) speed = maxSpeed;
-	    }
-	  }
+    // Acceleration code.
+    if (accel_type != ACCEL_NONE)
+    {
+      if (accel_startspeed < maxSpeed)
+      {
+        speed += accel_type;
+        if (speed > maxSpeed) speed = maxSpeed;
+      }
+      else
+      {
+        speed -= accel_type;
+        if (speed < maxSpeed) speed = maxSpeed;
+      }
+    }
 
-	  leftDrive(speed - pidResult);
-	  rightDrive(speed + pidResult);
+    leftDrive(speed - pidResult);
+    rightDrive(speed + pidResult);
 
-		int lEnc = getLeftEncoder();
-		int rEnc = getRightEncoder();
+    int lEnc = getLeftEncoder();
+    int rEnc = getRightEncoder();
 
-		if (type == DRIVE_ENCODERS || type == DRIVE_LINES)
-		{
-		  if (fabs(lEnc + rEnc) / 2 > distance) break;
-	  }
+    if (type == DRIVE_ENCODERS || type == DRIVE_LINES)
+    {
+      if (fabs(lEnc + rEnc) / 2 > distance) break;
+    }
 
-	  if (type == DRIVE_LINES)
-	  {
-	    if (getLeftLine() < LINE_DETECT_VALUE) break;
-	    if (getRightLine() < LINE_DETECT_VALUE) break;
-	  }
+    if (type == DRIVE_LINES)
+    {
+      if (getLeftLine() < LINE_DETECT_VALUE) break;
+      if (getRightLine() < LINE_DETECT_VALUE) break;
+    }
 
-	  if (type == DRIVE_BACK_SONAR)
-	  {
-	    int sonarVal = getBackSonar();
-	    if (sonarVal < distance && sonarVal > 0) break;
-	  }
+    if (type == DRIVE_BACK_SONAR)
+    {
+      int sonarVal = getBackSonar();
+      if (sonarVal < distance && sonarVal > 0) break;
+    }
 
-	  if (type == DRIVE_BACK_SONAR_FORWARD)
-	  {
-	    int sonarVal = getBackSonar();
-	    if (sonarVal > distance && sonarVal > 0) break;
-	  }
+    if (type == DRIVE_BACK_SONAR_FORWARD)
+    {
+      int sonarVal = getBackSonar();
+      if (sonarVal > distance && sonarVal > 0) break;
+    }
 
-		delay(10);
-	}
+    delay(10);
+  }
 
-	return 0;
+  return 0;
 }
 
 #endif

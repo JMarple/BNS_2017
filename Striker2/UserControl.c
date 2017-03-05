@@ -70,7 +70,9 @@ task usercontrol()
 
 		if (vexRT[Btn7L])
 		{
-		  PSC();
+		  driveHoldHeading(100, 80, 0);
+		  driveCorrectedSmoothTurn(80, 80, -90, 5);
+      driveStraight(300, 80);
 		}
 	}
 }
