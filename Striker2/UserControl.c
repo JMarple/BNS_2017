@@ -3,8 +3,6 @@
 
 task usercontrol()
 {
-  startTask(LCD);
-
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
 	int X = 0, Y1 = 0, Y2 = 0, threshold = 15;
 	int direction = 0;
@@ -68,10 +66,13 @@ task usercontrol()
 			SensorValue(intake) = 0;
 		}
 
+		if (vexRT(Btn8U)) SensorValue[pusher] = 1;
+		if (vexRT(Btn8D)) SensorValue[pusher] = 0;
+
 		if (vexRT[Btn7L])
 		{
 		  driveHoldHeading(100, 80, 0);
-		  driveCorrectedSmoothTurn(80, 80, -90, 5);
+		  driveCorrectedSmoothTurn(-90, 60);
       driveStraight(300, 80);
 		}
 	}

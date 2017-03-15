@@ -3,8 +3,13 @@
 
 #define LIFT_LOW_HEIGHT 3920
 #define LIFT_LITTLE_BIT_HEIGHT 3000
+#define LIFT_SIDE_PUSH_HEIGHT 2700
 #define LIFT_MID_HEIGHT 1900
 #define LIFT_HIGH_HEIGHT 1500
+
+#define PID_INPLACE_TURN_NORMAL 0x00
+#define PID_INPLACE_TURN_PUSHER 0x01
+#define PID_INPLACE_TURN_SMALL_NORMAL 0x02
 
 // Function Prototypes
 void SetMotorLinear(tMotor mot, float dutyCycle);
@@ -59,9 +64,19 @@ int getBackSonar()
   return SensorValue[backSonar];
 }
 
+int getFrontSonar()
+{
+  return SensorValue[frontSonar];
+}
+
 void setClaw(int value)
 {
   SensorValue[intake] = value;
+}
+
+void setPusher(int value)
+{
+  SensorValue[pusher] = value;
 }
 
 void resetEncoders()
@@ -173,13 +188,30 @@ float BiquadFilterSample(struct BiquadFilter* filter, float data)
   return output;
 }
 
+void GyroCalibration()
+{
+  // Wait for first packet to come
+  while (packetCount <= 50){;}
+  gyroCalibYaw = (int)(gyroYaw / 50.0);
 
+  writeDebugStreamLine("Calib yaw value = %f", gyroCalibYaw);
+}
 
+void GyroResetAngle(float value)
+{
+  gyroYaw = value;
+}
 
+float GyroGetAngle()
+{
+  return gyroYaw;
+}
 
-
-
-
+float GyroGetRate()
+{
+  return gyroYawRate;
+}
+/*
 struct GyroSensor
 {
   // Calibration value
@@ -287,7 +319,7 @@ task GyroTask
     GyroUpdateFiltered(&gyroLP, 0.003);
     wait1Msec(3);
   }
-}
+}*/
 
 struct PID
 {
@@ -373,7 +405,7 @@ void SetMotorLinear(tMotor mot, float dutyCycle)
   // The relationship between motor value is linear, but goes from 6->86.
   else
   {
-    if (abs(dutyCycle) <= 0) motor[mot] = 0;
+    if (fabs(dutyCycle) <= 0) motor[mot] = 0;
     if (dutyCycle >= 0.97) motor[mot] = 127;
     if (dutyCycle <= -0.97) motor[mot] = -127;
     else motor[mot] = (int)(82.91 * dutyCycle + 5.0854);
