@@ -1,15 +1,16 @@
 #ifndef __ROBOT_C__
 #define __ROBOT_C__
 
-#define LIFT_LOW_HEIGHT 3920
+#define LIFT_LOW_HEIGHT 3650
 #define LIFT_LITTLE_BIT_HEIGHT 3000
-#define LIFT_SIDE_PUSH_HEIGHT 2700
+#define LIFT_SIDE_PUSH_HEIGHT 2000
 #define LIFT_MID_HEIGHT 1900
-#define LIFT_HIGH_HEIGHT 1500
+#define LIFT_HIGH_HEIGHT 1400
 
 #define PID_INPLACE_TURN_NORMAL 0x00
 #define PID_INPLACE_TURN_PUSHER 0x01
 #define PID_INPLACE_TURN_SMALL_NORMAL 0x02
+#define PID_INPLACE_TURN_WITH_CUBE 0x03
 
 // Function Prototypes
 void SetMotorLinear(tMotor mot, float dutyCycle);
@@ -61,12 +62,13 @@ int getRightLine()
 
 int getBackSonar()
 {
-  return SensorValue[backSonar];
+  int sonarVal = SensorValue[backSonar]
+  return sonarVal < 10000 ? sonarVal : -1;
 }
 
 int getFrontSonar()
 {
-  return SensorValue[frontSonar];
+  return 0;//SensorValue[frontSonar];
 }
 
 void setClaw(int value)
@@ -420,6 +422,8 @@ void SetLiftHeight(int value)
   targetLiftHeight = value;
 }
 
+float _liftPower = 0;
+
 task liftHeight()
 {
   struct PID liftpid;
@@ -429,7 +433,9 @@ task liftHeight()
   {
     int angle = getLiftHeight();
     float value = PIDUpdate(&liftpid, (angle - targetLiftHeight), 0.01);
+    _liftPower = value;
     liftPower(value);
+    //writeDebugStreamLine("%d %f %d", targetLiftHeight, _liftPower, motor[liftL1]);
     delay(10);
   }
 }

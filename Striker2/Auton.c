@@ -8,7 +8,7 @@
 #define DRIVE_BACK_SONAR 2
 #define DRIVE_BACK_SONAR_FORWARD 3
 #define DRIVE_FORWARD_SONAR 4
-#define LINE_DETECT_VALUE 1900
+#define LINE_DETECT_VALUE 1700
 
 #define ACCEL_NONE 0
 #define ACCEL_SLOW 2
@@ -68,12 +68,13 @@ void driveCorrectedSmoothTurn(
   }
 }
 
-void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL)
+void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL, float cutoff = 0)
 {
   struct PID posPID;
 
   if (pidTuning == PID_INPLACE_TURN_NORMAL) PIDInit(&posPID, 2, 0, 0.18);
   else if (pidTuning == PID_INPLACE_TURN_SMALL_NORMAL) PIDInit(&posPID, 2, 0, 0.15);
+  else if (pidTuning == PID_INPLACE_TURN_WITH_CUBE) PIDInit(&posPID, 2, 0, 0.25);
   else if (pidTuning == PID_INPLACE_TURN_PUSHER) PIDInit(&posPID, 2, 0, 0.35);
   posPID.maxOutput = 90;
 
@@ -86,6 +87,11 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
     float speed = PIDUpdate(&posPID, posError, 0.01);
 
     if (abs(posError) <= 3) break;
+    if (abs(posError) <= 15 && abs(gyroYawRate) < 0.3) break;
+
+    // Used to cutoff before "stopping" like PID's usually do
+    // Allows for faster runs.
+    if (abs(posError) <= cutoff) break;
 
     leftDrive(-speed);
     rightDrive(speed);
@@ -157,6 +163,7 @@ int driveHoldHeading(
 	int type = TYPE_FORWARD,
 	int accel_type = ACCEL_NONE,
 	int accel_startspeed = 0,
+	float kP = 2,
 	int offset = 0)
 {
   if (distance < 0) distance = -distance;
@@ -164,7 +171,7 @@ int driveHoldHeading(
   resetEncoders();
 
   struct PID headingpid;
-  PIDInit(&headingpid, 2, 0, 0);
+  PIDInit(&headingpid, kP, 0, 0);
 
   int speed = maxSpeed;
 
@@ -209,7 +216,7 @@ int driveHoldHeading(
 
       if (leftLine < LINE_DETECT_VALUE || rightLine < LINE_DETECT_VALUE)
       {
-        writeDebugStreamLine("Line cutoff val = %d d", leftLine, rightLine);
+        writeDebugStreamLine("Line cutoff val = %d %d", leftLine, rightLine);
         break;
       }
 
@@ -218,13 +225,21 @@ int driveHoldHeading(
     if (type == DRIVE_BACK_SONAR)
     {
       int sonarVal = getBackSonar();
-      if (sonarVal < distance && sonarVal > 0) break;
+      if (sonarVal < distance && sonarVal > 0)
+      {
+        writeDebugStreamLine("Back Sonar Break = %d", sonarVal);
+        break;
+      }
     }
 
     if (type == DRIVE_BACK_SONAR_FORWARD)
     {
       int sonarVal = getBackSonar();
-      if (sonarVal > distance && sonarVal > 0) break;
+      if (sonarVal > distance && sonarVal > 0)
+      {
+        writeDebugStreamLine("Back Sonar Forward Break = %d", sonarVal);
+        break;
+      }
     }
 
     if (type == DRIVE_FORWARD_SONAR)

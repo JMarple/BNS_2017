@@ -32,7 +32,7 @@ task usercontrol()
 
 		if(vexRT(Btn6U) /*&& SensorValue(pot) < 2600*/)
 		{
-			liftPower(127);
+      liftPower(127);
 			direction = 1;
 			//if(SensorValue(pot) > 2500) {
 			//	SensorValue(intake) = 0;
@@ -40,7 +40,7 @@ task usercontrol()
 		}
 		else if(vexRT(Btn6D))
 		{
-			liftPower(-127);
+      liftPower(-127);
 			direction = -1;
 	  }/*
 	  else if(SensorValue(pot) > 2600)
