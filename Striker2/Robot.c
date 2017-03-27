@@ -3,6 +3,7 @@
 
 #define LIFT_LOW_HEIGHT 3650
 #define LIFT_LITTLE_BIT_HEIGHT 3000
+#define LIFT_MID_CUBE_HEIGHT 2500
 #define LIFT_SIDE_PUSH_HEIGHT 2000
 #define LIFT_MID_HEIGHT 1900
 #define LIFT_HIGH_HEIGHT 1400
@@ -11,6 +12,8 @@
 #define PID_INPLACE_TURN_PUSHER 0x01
 #define PID_INPLACE_TURN_SMALL_NORMAL 0x02
 #define PID_INPLACE_TURN_WITH_CUBE 0x03
+#define PID_INPLACE_HANGING 0x04
+#define PID_INPLACE_TURN_PUSHER_FALLING 0x05
 
 // Function Prototypes
 void SetMotorLinear(tMotor mot, float dutyCycle);
@@ -27,6 +30,11 @@ void rightDrive(int power)
 	SetMotorLinear(driveR1, power/127.0);
 	SetMotorLinear(driveR2, power/127.0);
 	SetMotorLinear(driveR3, power/127.0);
+}
+
+void setHangingLock(int value)
+{
+  SensorValue[hangingLock] = value;
 }
 
 void drivePower(int power)
@@ -62,7 +70,7 @@ int getRightLine()
 
 int getBackSonar()
 {
-  int sonarVal = SensorValue[backSonar]
+  int sonarVal = SensorValue[backSonar];
   return sonarVal < 10000 ? sonarVal : -1;
 }
 
@@ -453,6 +461,30 @@ float limitTo180(float degrees)
 	}
 
 	return degrees;
+}
+
+#include "pixy.c"
+
+Pixy robotPixy;
+PixyBlock* largestBlock;
+int largestBlockX;
+
+task PixyPackets
+{
+  newPixy(&robotPixy, UART2, baudRate38400);
+
+  while (1==1)
+  {
+    pixyUpdate(&robotPixy);
+    largestBlock = pixyGetLargestBlock(&robotPixy, 1);
+    if (largestBlock != 0) largestBlockX = largestBlock->x;
+    //pixyPrint(&robotPixy);
+    /*if (largestBlock != 0)
+      pixyPrint(largestBlock);
+    else
+      writeDebugStreamLine("---");*/
+    delay(50);
+  }
 }
 
 #endif

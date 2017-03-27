@@ -69,11 +69,20 @@ task usercontrol()
 		if (vexRT(Btn8U)) SensorValue[pusher] = 1;
 		if (vexRT(Btn8D)) SensorValue[pusher] = 0;
 
+		if (vexRT(Btn8L)) SensorValue[hangingLock] = 1;
+		if (vexRT(Btn8R)) SensorValue[hangingLock] = 0;
+
 		if (vexRT[Btn7L])
 		{
-		  driveHoldHeading(100, 80, 0);
-		  driveCorrectedSmoothTurn(-90, 60);
-      driveStraight(300, 80);
+		  static float currentHeading = 0;
+		  //currentHeading += ROTATE_LEFT / 2;
+		  //driveOneWheel(currentHeading);
+		  PSC();
+		  //AutonCubeFar();
+		  //DrivePixyStraight(1000, 60);
+		  //driveHoldHeading(100, 80, 0);
+		  //driveCorrectedSmoothTurn(-90, 60);
+      //driveStraight(300, 80);
 		}
 	}
 }
