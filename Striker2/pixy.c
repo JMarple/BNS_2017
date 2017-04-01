@@ -96,9 +96,10 @@ typedef struct {
 	PixyBlock blocks[PIXY_ARRAY_SIZE];
 } Pixy;
 
+//TODO: filter out parts of the camera's view here
 PixyBlock* pixyGetLargestBlock(Pixy* this, int sig)
 {
-  PixyBlock* res = 0;
+  PixyBlock* res = (PixyBlock*)0;
   int largest = 0;
 
   for (int i = 0; i < this->blockCount; i++)

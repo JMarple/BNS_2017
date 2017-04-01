@@ -76,7 +76,8 @@ int getBackSonar()
 
 int getFrontSonar()
 {
-  return 0;//SensorValue[frontSonar];
+  int sonarVal = SensorValue[frontSonar];
+  return sonarVal < 10000 ? sonarVal : -1;
 }
 
 void setClaw(int value)
@@ -100,9 +101,25 @@ float getLiftHeight()
   return SensorValue(pot);
 }
 
+enum SonarLocation
+{
+  FRONT_ON,
+  BACK_ON
+};
 
-
-
+void toggleSonar(SonarLocation sonar)
+{
+	if(sonar == FRONT_ON)
+	{
+		SensorType[dgtl10] = sensorNone;
+		SensorType[dgtl6] = sensorSONAR_TwoPins_raw;
+	}
+	else if(sonar == BACK_ON)
+	{
+		SensorType[dgtl6] = sensorNone;
+		SensorType[dgtl10] = sensorSONAR_TwoPins_raw;
+	}
+}
 
 
 // Biquad filter is a standard 2nd-order filter

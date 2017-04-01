@@ -84,6 +84,9 @@ task usercontrol()
 		  //driveCorrectedSmoothTurn(-90, 60);
       //driveStraight(300, 80);
 		}
+
+		if(vexRT(Btn7U)) toggleSonar(FRONT_ON);
+		if(vexRT(Btn7D)) toggleSonar(BACK_ON);
 	}
 }
 
