@@ -126,20 +126,23 @@ bool ClawFull()
 float OnePass(int dir, float currentHeading, int oldColumn = 3)
 {
 	PixyBlock* targetBlock;
+
 	while(1 == 1)
 	{
 		setClaw(0);
+
+
 		if (largestBlock != 0)
 		{
 			writeDebugStreamLine("DFSDFSDF");
-			memcpy(targetBlock, largestBlock, sizeof(targetBlock));
+			//memcpy(targetBlock, largestBlock, sizeof(targetBlock));
 		}
 		else
 		{
 			writeDebugStreamLine("continuing?");
 			continue;
 		}
-
+		/*
 		writeDebugStream("old %i", oldColumn);
 
 		int newColumn = PickHeading(oldColumn, targetBlock);
@@ -155,7 +158,7 @@ float OnePass(int dir, float currentHeading, int oldColumn = 3)
 			writeDebugStreamLine("break");
 			break;
 		}
-
+		*/
 		wait1Msec(50);
 	}
 	toggleSonar(FRONT_ON);
@@ -168,6 +171,7 @@ float OnePass(int dir, float currentHeading, int oldColumn = 3)
 	PixyScore(currentHeading);
 	toggleSonar(BACK_ON);
 	currentHeading = PixyBackFromFence(dir, currentHeading);
+
 
 	return currentHeading;
 
@@ -313,7 +317,7 @@ float PixyMidNearZone(int dir = 1, float currentHeading)
 
 	return currentHeading;
 }
-/*
+
 void PixyAutoNew(float currentHeading = 0)
 {
 int passCount = 0;
@@ -323,11 +327,11 @@ SetLiftHeight(LIFT_LOW_HEIGHT);
 
 while(1 == 1)
 {
-OnePass(passCount % 2, currentHeading);
+OnePass((passCount % 2)*2 -1, currentHeading);
 }
 }
-*/
 
+/*
 void PixyAutonNew(float currentHeading = 0)
 {
 	startTask(liftHeight);
@@ -379,7 +383,7 @@ void PixyAutonNew(float currentHeading = 0)
 		count++;
 	}
 }
-
+*/
 void PixyAuton()
 {
 	float currentHeading = 0;

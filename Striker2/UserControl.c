@@ -3,6 +3,7 @@
 
 task usercontrol()
 {
+	stopTask(liftHeight);
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
 	int X = 0, Y1 = 0, Y2 = 0, threshold = 15;
 	int direction = 0;
