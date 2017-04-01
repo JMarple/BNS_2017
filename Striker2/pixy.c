@@ -22,12 +22,12 @@
 #define PIXY_RCS_CENTER_POS 	((PIXY_RCS_MAX_POS - PIXY_RCS_MIN_POS) / 2)
 
 /**
- * Get next character from UART port.
- *
- * @param 	port	UART port to get from.
- *
- * @return	Next character.
- */
+* Get next character from UART port.
+*
+* @param 	port	UART port to get from.
+*
+* @return	Next character.
+*/
 unsigned char getNextChar(TUARTs port) {
 	short c;
 
@@ -40,30 +40,30 @@ unsigned char getNextChar(TUARTs port) {
 }
 
 /**
- * Get next word from UART port.
- *
- * @param 	port	UART port to get from.
- *
- * @return	Next word from UART port.
- */
+* Get next word from UART port.
+*
+* @param 	port	UART port to get from.
+*
+* @return	Next word from UART port.
+*/
 unsigned short getNextWord(TUARTs port) {
 	// This routine assumes little-endian.
 
-  char n1 = getNextChar(port);
+	char n1 = getNextChar(port);
 	char n2 = getNextChar(port);
 
 	return n1 | (n2 << 8);
 }
 
 /**
- * Send character array to UART port.
- *
- * @param 	port	Port to send to.
- * @param 	data	Character array to send.
- * @param 	len 	Array length.
- *
- * @return	Array length.
- */
+* Send character array to UART port.
+*
+* @param 	port	Port to send to.
+* @param 	data	Character array to send.
+* @param 	len 	Array length.
+*
+* @return	Array length.
+*/
 short sendChars(TUARTs port, unsigned char *data, short len) {
 	for (short i = 0; i < len; i++) {
 		// Wait for transmit buffer to be empty or timeout.
@@ -96,36 +96,67 @@ typedef struct {
 	PixyBlock blocks[PIXY_ARRAY_SIZE];
 } Pixy;
 
-//TODO: filter out parts of the camera's view here
 PixyBlock* pixyGetLargestBlock(Pixy* this, int sig)
 {
-  PixyBlock* res = (PixyBlock*)0;
-  int largest = 0;
+	PixyBlock* res = (PixyBlock*)0;
+	int largest = 0;
 
-  for (int i = 0; i < this->blockCount; i++)
-  {
-    if (this->blocks[i].signature != sig) continue;
+	for (int i = 0; i < this->blockCount; i++)
+	{
+		//if (this->blocks[i].signature != sig) continue;
 
-    int val = this->blocks[i].width * this->blocks[i].height;
-    if (val > largest)
-    {
-      res = &this->blocks[i];
-      largest = val;
-    }
-  }
+		//filter out part of the fov
+		if (this->blocks[i].y < 110
+			&& this->blocks[i].x > ((-2.0/9.0) * this->blocks[i].y + 90.)
+			&& this->blocks[i].x < ((2.0/9.0) * this->blocks[i].y + 260.))
+		{
+			int val = this->blocks[i].width * this->blocks[i].height;
+			if (val > largest)
+			{
+				res = &this->blocks[i];
+				largest = val;
+			}
+		}
+	}
 
-  return res;
+	return res;
+}
+
+PixyBlock* pixyGetLargestBlockInClaw(Pixy* this, int sig)
+{
+	PixyBlock* res = (PixyBlock*)0;
+	int largest = 0;
+
+	for (int i = 0; i < this->blockCount; i++)
+	{
+		//if (this->blocks[i].signature != sig) continue;
+
+		//filter out part of the fov
+		if (this->blocks[i].y > 110
+			&& this->blocks[i].x > 100
+			&& this->blocks[i].x < 250)
+		{
+			int val = this->blocks[i].width * this->blocks[i].height;
+			if (val > largest)
+			{
+				res = &this->blocks[i];
+				largest = val;
+			}
+		}
+	}
+
+	return res;
 }
 
 /**
- * Initialize Pixy.
- *
- * @param 	this    	Pointer to Pixy struct.
- * @param 	port    	UART port the Pixy is plugged into.
- * @param 	baudRate	Baud rate the Pixy is set to use.
- *
- * @return	Pointer to Pixy struct.
- */
+* Initialize Pixy.
+*
+* @param 	this    	Pointer to Pixy struct.
+* @param 	port    	UART port the Pixy is plugged into.
+* @param 	baudRate	Baud rate the Pixy is set to use.
+*
+* @return	Pointer to Pixy struct.
+*/
 Pixy *newPixy(Pixy *this, TUARTs port, TBaudRate baudRate) {
 	if (this) {
 		setBaudRate(port, baudRate);
@@ -138,24 +169,24 @@ Pixy *newPixy(Pixy *this, TUARTs port, TBaudRate baudRate) {
 }
 
 /**
- * Initialize Pixy.
- *
- * @param 	this	Pointer to Pixy struct.
- * @param 	port	UART port the Pixy is plugged into.
- *
- * @return	Pointer to Pixy struct.
- */
+* Initialize Pixy.
+*
+* @param 	this	Pointer to Pixy struct.
+* @param 	port	UART port the Pixy is plugged into.
+*
+* @return	Pointer to Pixy struct.
+*/
 Pixy *newPixy(Pixy *this, TUARTs port) {
 	return newPixy(this, port, baudRate19200);
 }
 
 /**
- * Initialize Pixy.
- *
- * @param 	this	Pointer to Pixy struct.
- *
- * @return	Pointer to Pixy struct.
- */
+* Initialize Pixy.
+*
+* @param 	this	Pointer to Pixy struct.
+*
+* @return	Pointer to Pixy struct.
+*/
 Pixy *newPixy(Pixy *this) {
 	if (this) {
 		this->port = (TUARTs)-1;
@@ -166,12 +197,12 @@ Pixy *newPixy(Pixy *this) {
 }
 
 /**
- * Get start word from Pixy.
- *
- * @param 	this	Pointer to Pixy struct.
- *
- * @return	true if start code found, false otherwise.
- */
+* Get start word from Pixy.
+*
+* @param 	this	Pointer to Pixy struct.
+*
+* @return	true if start code found, false otherwise.
+*/
 bool getPixyStart(Pixy *this) {
 	if (this == NULL) {
 		return false;
@@ -184,13 +215,13 @@ bool getPixyStart(Pixy *this) {
 		w = getNextWord(port);
 		if (w == 0 && lastW == 0) {
 			return false;  // No start code.
-		} else if (w == PIXY_START_WORD && lastW == PIXY_START_WORD) {
+			} else if (w == PIXY_START_WORD && lastW == PIXY_START_WORD) {
 			this->blockType = NORMAL_BLOCK;
 			return true;  // Code found!
-		} else if (w == PIXY_START_WORD_CC && lastW == PIXY_START_WORD_CC) {
+			} else if (w == PIXY_START_WORD_CC && lastW == PIXY_START_WORD_CC) {
 			this->blockType = CC_BLOCK;  // Found color code block.
 			return true;
-		} else if (w == PIXY_START_WORDX) {  // This is important, we might be juxtaposed.
+			} else if (w == PIXY_START_WORDX) {  // This is important, we might be juxtaposed.
 			getChar(port);  // We're out of sync (backwards)!
 		}
 		lastW = w;
@@ -198,12 +229,12 @@ bool getPixyStart(Pixy *this) {
 }
 
 /**
- * Update block data for Pixy.
- *
- * @param 	this	Pointer to Pixy struct.
- *
- * @return	Number of blocks found.
- */
+* Update block data for Pixy.
+*
+* @param 	this	Pointer to Pixy struct.
+*
+* @return	Number of blocks found.
+*/
 unsigned short pixyUpdate(Pixy *this) {
 	if (this == NULL) {
 		return 0;
@@ -218,7 +249,7 @@ unsigned short pixyUpdate(Pixy *this) {
 			this->blockCount = 0;
 			return 0;
 		}
-	} else {
+		} else {
 		this->skipStart = false;
 	}
 	while (blockCount < PIXY_ARRAY_SIZE) {
@@ -229,12 +260,12 @@ unsigned short pixyUpdate(Pixy *this) {
 			this->blockType = NORMAL_BLOCK;
 			this->blockCount = blockCount;
 			break;
-		} else if (checksum == PIXY_START_WORD_CC) {
+			} else if (checksum == PIXY_START_WORD_CC) {
 			this->skipStart = true;
 			this->blockType = CC_BLOCK;
 			this->blockCount = blockCount;
 			break;
-		} else if (checksum == 0) {
+			} else if (checksum == 0) {
 			this->blockCount = blockCount;
 			break;
 		}
@@ -261,16 +292,16 @@ unsigned short pixyUpdate(Pixy *this) {
 
 		// Check checksum.
 		//if (checksum == sum) {
-			blockCount++;
+		blockCount++;
 		//} else {
 		//	writeDebugStream("Pixy update checksum error!\n");
 		//}
 		w = getNextWord(port);
 		if (w == PIXY_START_WORD) {
 			this->blockType = NORMAL_BLOCK;
-		} else if (w == PIXY_START_WORD_CC) {
+			} else if (w == PIXY_START_WORD_CC) {
 			this->blockType = CC_BLOCK;
-		} else {
+			} else {
 			this->blockCount = blockCount;
 			break;
 		}
@@ -279,24 +310,24 @@ unsigned short pixyUpdate(Pixy *this) {
 }
 
 /**
- * Get number of blocks last recorded by Pixy via update().
- *
- * @param 	this	Pointer to Pixy struct.
- *
- * @return	Number of blocks.
- */
+* Get number of blocks last recorded by Pixy via update().
+*
+* @param 	this	Pointer to Pixy struct.
+*
+* @return	Number of blocks.
+*/
 unsigned short getBlockCount(Pixy *this) {
 	return this ? this->blockCount : 0;
 }
 
 /**
- * Set Pixy camera brightness.
- *
- * @param 	this      	Pointer to Pixy struct.
- * @param 	beightness	Brightness value.
- *
- * @return	Number of characters sent via sendChars().
- */
+* Set Pixy camera brightness.
+*
+* @param 	this      	Pointer to Pixy struct.
+* @param 	beightness	Brightness value.
+*
+* @return	Number of characters sent via sendChars().
+*/
 short setBrightness(Pixy *this, unsigned char brightness) {
 	if (this == NULL) {
 		return 0;
@@ -307,15 +338,15 @@ short setBrightness(Pixy *this, unsigned char brightness) {
 }
 
 /**
- * Set Pixy LED color.
- *
- * @param 	this	Pointer to Pixy struct.
- * @param 	r   	Red intensity.
- * @param 	g   	Green intensity.
- * @param 	b   	Blue intensity.
- *
- * @return	Number of characters sent via sendChars().
- */
+* Set Pixy LED color.
+*
+* @param 	this	Pointer to Pixy struct.
+* @param 	r   	Red intensity.
+* @param 	g   	Green intensity.
+* @param 	b   	Blue intensity.
+*
+* @return	Number of characters sent via sendChars().
+*/
 short setLED(Pixy *this, unsigned char r, unsigned char g, unsigned char b) {
 	if (this == NULL) {
 		return 0;
@@ -326,14 +357,14 @@ short setLED(Pixy *this, unsigned char r, unsigned char g, unsigned char b) {
 }
 
 /**
- * Set pan/tilt servo positions.
- *
- * @param 	this	Pointer to Pixy struct.
- * @param 	s0  	Servo 0 (pan) position.
- * @param 	s1  	Servo 1 (tilt) position.
- *
- * @return	Number of characters sent via sendChars().
- */
+* Set pan/tilt servo positions.
+*
+* @param 	this	Pointer to Pixy struct.
+* @param 	s0  	Servo 0 (pan) position.
+* @param 	s1  	Servo 1 (tilt) position.
+*
+* @return	Number of characters sent via sendChars().
+*/
 short setServos(Pixy *this, unsigned short s0, unsigned short s1) {
 	if (this == NULL) {
 		return 0;
@@ -349,10 +380,10 @@ short setServos(Pixy *this, unsigned short s0, unsigned short s1) {
 }
 
 /**
- * Print single Pixy block data to debug stream.
- *
- * @param 	this	Pointer to PixyBlock struct.
- */
+* Print single Pixy block data to debug stream.
+*
+* @param 	this	Pointer to PixyBlock struct.
+*/
 void pixyPrint(PixyBlock *this) {
 	if (this == NULL) {
 		return;
@@ -361,19 +392,19 @@ void pixyPrint(PixyBlock *this) {
 
 	if (signature > PIXY_MAX_SIGNATURE) {  // Color code (CC)!
 		writeDebugStream(
-				"CC block! sig: %o (%d decimal) x: %d y: %d width: %d height: %d angle: %d\n",
-				signature, signature, this->x, this->y, this->width, this->height, this->angle);
-	} else {  // Regular block. Note, angle is always zero, so no need to print.
+		"CC block! sig: %o (%d decimal) x: %d y: %d width: %d height: %d angle: %d\n",
+		signature, signature, this->x, this->y, this->width, this->height, this->angle);
+		} else {  // Regular block. Note, angle is always zero, so no need to print.
 		writeDebugStream("sig: %d x: %d y: %d width: %d height: %d\n", signature,
-				this->x, this->y, this->width, this->height);
+		this->x, this->y, this->width, this->height);
 	}
 }
 
 /**
- * Print all Pixy block data to debug stream.
- *
- * @param 	this	Pointer to Pixy struct.
- */
+* Print all Pixy block data to debug stream.
+*
+* @param 	this	Pointer to Pixy struct.
+*/
 void pixyPrint(Pixy *this) {
 	if (this == NULL) {
 		return;
@@ -384,11 +415,11 @@ void pixyPrint(Pixy *this) {
 
 	for (unsigned short i = 0; i < blockCount; i++)
 	{
-	  if (this->blocks[i].signature == 1)
-	  {
-		  writeDebugStream("\tblock %d: ", i);
+		if (this->blocks[i].signature == 1)
+		{
+			writeDebugStream("\tblock %d: ", i);
 
-		  pixyPrint(&this->blocks[i]);
+			pixyPrint(&this->blocks[i]);
 		}
 	}
 }

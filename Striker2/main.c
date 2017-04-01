@@ -41,7 +41,7 @@ void pre_auton()
   GyroCalibration();
   //writeDebugStreamLine("Gyro calib done");
 
-  startTask(PixyPackets);
+
 }
 
 void AutonCubeFar()
@@ -52,7 +52,7 @@ void AutonCubeFar()
   // Turn a little and pick up cube
   currentHeading += ROTATE_RIGHT * 0.15;
   setClaw(0);
-  driveHoldHeading(600, 100, currentHeading);
+  driveHoldHeading(600, 100, currentHeading, DRIVE_ENCODERS);
 
   currentHeading += ROTATE_RIGHT * 0.35;
 
@@ -80,7 +80,7 @@ void AutonCubeFar()
   drivePower(0);
 }
 
-void AutonCubeMid()
+float AutonCubeMid()
 {
   startTask(liftHeight);
   float currentHeading = 0;
@@ -88,7 +88,7 @@ void AutonCubeMid()
   // Turn a little and pick up cube
   currentHeading += ROTATE_RIGHT * 0.15;
   setClaw(0);
-  driveHoldHeading(600, 100, currentHeading);
+  driveHoldHeading(600, 100, currentHeading, DRIVE_ENCODERS);
   setClaw(1);
   SetLiftHeight(LIFT_HIGH_HEIGHT);
 
@@ -96,7 +96,7 @@ void AutonCubeMid()
   currentHeading += ROTATE_LEFT / 2 + ROTATE_LEFT * 0.15;
   driveTurnInPlace(currentHeading);
   drivePower(0);
-  waitForLiftUp(LIFT_MID_CUBE_HEIGHT);
+  waitForLiftUp(LIFT_LITTLE_BIT_HEIGHT);
 
   // Score #1
   driveHoldHeading(100, 80, currentHeading);
@@ -111,12 +111,14 @@ void AutonCubeMid()
 	currentHeading += ROTATE_RIGHT / 1.9;
 	driveHoldHeading(-300, -65, currentHeading);
 	SetLiftHeight(LIFT_LOW_HEIGHT);
-	driveHoldHeading(-700, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
+	driveHoldHeading(-750, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
 
 	currentHeading += ROTATE_RIGHT * (0.9/1.9);
 	driveTurnInPlace(currentHeading);
-  driveHoldHeading(1500, 110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 60);
+  driveHoldHeading(1650, 110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 60);
   setClaw(1);
+  drivePower(0);
+  wait1Msec(300);
   SetLiftHeight(LIFT_HIGH_HEIGHT);
 
   currentHeading += ROTATE_LEFT;
@@ -130,6 +132,8 @@ void AutonCubeMid()
   drivePower(50);
   wait1Msec(250);
 	drivePower(0);
+
+	return currentHeading;
 }
 
 void PSC()
@@ -451,6 +455,14 @@ void PSC()
 
 task autonomous()
 {
+	startTask(PixyPackets);
+	float currentHeading = AutonCubeMid();
+	toggleSonar(BACK_ON);
+	currentHeading = PixyBackFromFence(-1, currentHeading);
+	drivePower(0);
+	PixyTurn();
+	//PixyAutonNew();
+	/*
 	if(SensorValue(selector2) > 3000)
 	{
   	PSC();
@@ -459,6 +471,7 @@ task autonomous()
   {
   	AutonCubeMid();
   }
+  */
 }
 
 

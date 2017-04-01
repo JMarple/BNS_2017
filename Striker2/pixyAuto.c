@@ -1,22 +1,32 @@
-const int PIXY_MID = 160;
+const int PIXY_MID = 170;
 
-int PickHeading(int oldColumn)
+int PickHeading(int oldColumn, PixyBlock* targetBlock)
 {
 	int xValue, yValue, newColumn = 0;
-	if (largestBlock != 0)
+
+	xValue = targetBlock->x;
+	yValue = targetBlock->y;
+
+	if (xValue < (-6/45)*yValue + 133.)
 	{
-		xValue = largestBlock->x;
-		yValue = largestBlock->y;
+		newColumn = oldColumn - 2;
 	}
-	//TODO: figure out which column this is in
-	if (yValue > 4*xValue + 200) //numbers tbd
+	else if (xValue < (-2/45)*yValue + 171.)
 	{
-		newColumn = 1;
+		newColumn = oldColumn - 1;
 	}
-	else if (yValue > 8*xValue + 200)
+	else if (xValue < (2/45)*yValue + 203.)
 	{
-		newColumn = 2;
-	}//etc
+		newColumn = oldColumn;
+	}
+	else if (xValue < (6/45)*yValue + 227.)
+	{
+		newColumn = oldColumn + 1;
+	}
+	else
+	{
+		newColumn = oldColumn + 2;
+	}
 
 	return newColumn;
 }
@@ -30,27 +40,32 @@ float PixyTurn(float cutoff = 3)
 	while (1==1)
 	{
 		float error = 0;
-		if (largestBlock != 0)
+		error = largestBlockX - PIXY_MID;
+
+		float pidResult = PIDUpdate(&pixyHeadingPID, error, 1);
+
+		if(error >= 0)
 		{
-			error = largestBlock->x - PIXY_MID;
+			leftDrive(pidResult);
+			rightDrive(-pidResult);
+		}
+		else
+		{
+			leftDrive(-pidResult);
+			rightDrive(pidResult);
 		}
 
-		float pidResult = PIDUpdate(&pixyHeadingPID, error, 0.05);
-
-		leftDrive(pidResult);
-		rightDrive(pidResult);
-
 		if (abs(error) <= cutoff) break;
-		if (abs(error) <= 20 && abs(gyroYawRate) < 0.3) break;
+		if (abs(error) <= 50 && abs(gyroYawRate) < 0.3) break;
 		delay(50);
 	}
 	//however much it turned, assume it was the right amount for the purposes of correcting
 	return GyroGetAngle();
 }
 
-void ColumnTransition(int oldColumn, int newColumn)
+void ColumnTransition(int oldColumn, int newColumn, PixyBlock* targetBlock)
 {
-	float columnDist = 10; //TODO: figure out what this number should be
+	float columnDist = 500; //TODO: figure out what this number should be
 
 	float oldHeading = GyroGetAngle();
 	float tempHeading = PixyTurn();
@@ -110,23 +125,48 @@ bool ClawFull()
 
 float OnePass(int dir, float currentHeading, int oldColumn = 3)
 {
-	while(ClawFull() == false && bIfiAutonomousMode == true)
+	PixyBlock* targetBlock;
+	while(1 == 1)
 	{
-		int newColumn = PickHeading(oldColumn);
-		if (newColumn != oldColumn && newColumn != 0)
+		setClaw(0);
+		if (largestBlock != 0)
 		{
-			ColumnTransition(oldColumn, newColumn);
+			writeDebugStreamLine("DFSDFSDF");
+			memcpy(targetBlock, largestBlock, sizeof(targetBlock));
 		}
 		else
+		{
+			writeDebugStreamLine("continuing?");
+			continue;
+		}
+
+		writeDebugStream("old %i", oldColumn);
+
+		int newColumn = PickHeading(oldColumn, targetBlock);
+
+		writeDebugStream("new %i", newColumn);
+
+		if (newColumn != oldColumn && newColumn != 0)
+		{
+			ColumnTransition(oldColumn, newColumn, targetBlock);
+		}
+		else
+		{
+			writeDebugStreamLine("break");
 			break;
+		}
+
+		wait1Msec(50);
 	}
-	driveHoldHeading(3000, 80, currentHeading, DRIVE_FORWARD_SONAR);
+	toggleSonar(FRONT_ON);
+	driveHoldHeading(4000, 80, currentHeading, DRIVE_FORWARD_SONAR);
 	setClaw(1);
 
 	currentHeading += ROTATE_RIGHT * sgn(dir);
 	driveTurnInPlace(currentHeading);
 
 	PixyScore(currentHeading);
+	toggleSonar(BACK_ON);
 	currentHeading = PixyBackFromFence(dir, currentHeading);
 
 	return currentHeading;
@@ -273,6 +313,72 @@ float PixyMidNearZone(int dir = 1, float currentHeading)
 
 	return currentHeading;
 }
+/*
+void PixyAutoNew(float currentHeading = 0)
+{
+int passCount = 0;
+startTask(liftHeight);
+setClaw(0);
+SetLiftHeight(LIFT_LOW_HEIGHT);
+
+while(1 == 1)
+{
+OnePass(passCount % 2, currentHeading);
+}
+}
+*/
+
+void PixyAutonNew(float currentHeading = 0)
+{
+	startTask(liftHeight);
+
+	//GyroResetAngle(0);
+	setClaw(0);
+	SetLiftHeight(LIFT_HIGH_HEIGHT);
+	int count = 0;
+	int newColumn, oldColumn;
+	int dir;
+
+	while (1==1)
+	{
+		dir = (count % 2)*2 - 1;
+
+		toggleSonar(BACK_ON);
+		currentHeading = PixyBackFromFence(dir, currentHeading);
+		drivePower(0);
+
+		oldColumn = 4;
+
+		delay(100);
+		for (int i = 0; i < 5; i++)
+		{
+			wait1Msec(50);
+			if (largestBlock != 0) break;
+		}
+
+		if (largestBlockX < (-6/45)*largestBlockY + 133.) newColumn = oldColumn - 2;
+		else if (largestBlockX < (-2/45)*largestBlockY + 171.) newColumn = oldColumn - 1;
+		else if (largestBlockX < (2/45)*largestBlockY + 203.) newColumn = oldColumn;
+		else if (largestBlockX < (6/45)*largestBlockY + 227.) newColumn = oldColumn + 1;
+		else newColumn = oldColumn + 2;
+
+		if (newColumn != oldColumn && newColumn != 0)
+		{
+			ColumnTransition(oldColumn, newColumn, largestBlock);
+		}
+		toggleSonar(FRONT_ON);
+		driveHoldHeading(5000, 80, currentHeading, DRIVE_FORWARD_SONAR);
+		drivePower(0);
+		setClaw(1);
+
+		currentHeading += ROTATE_RIGHT * sgn(dir);
+		driveTurnInPlace(currentHeading);
+
+		PixyScore(currentHeading);
+
+		count++;
+	}
+}
 
 void PixyAuton()
 {
@@ -289,6 +395,7 @@ void PixyAuton()
 
 	while (1==1)
 	{
+		toggleSonar(BACK_ON);
 		currentHeading = PixyBackFromFence(1, currentHeading);
 
 		delay(100);

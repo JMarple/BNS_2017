@@ -55,7 +55,7 @@ int getLeftEncoder()
 
 int getRightEncoder()
 {
-  return SensorValue[rightEncoder];
+  return -SensorValue[rightEncoder];
 }
 
 int getLeftLine()
@@ -484,7 +484,8 @@ float limitTo180(float degrees)
 
 Pixy robotPixy;
 PixyBlock* largestBlock;
-int largestBlockX;
+PixyBlock* largestBlockInClaw;
+int largestBlockX; int largestBlockY;
 
 task PixyPackets
 {
@@ -494,12 +495,16 @@ task PixyPackets
   {
     pixyUpdate(&robotPixy);
     largestBlock = pixyGetLargestBlock(&robotPixy, 1);
+    //largestBlockInClaw = pixyGetLargestBlockInClaw(&robotPixy, 1);
     if (largestBlock != 0) largestBlockX = largestBlock->x;
+    if (largestBlock != 0) largestBlockY = largestBlock->y;
     //pixyPrint(&robotPixy);
-    /*if (largestBlock != 0)
+
+    if (largestBlock != 0)
       pixyPrint(largestBlock);
     else
-      writeDebugStreamLine("---");*/
+      writeDebugStreamLine("---");
+
     delay(50);
   }
 }
