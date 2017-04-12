@@ -40,7 +40,7 @@ void pre_auton()
   //startTask(gyroCalib);
   GyroCalibration();
   //writeDebugStreamLine("Gyro calib done");
-	setClaw(1);
+	setClaw(0);
 	setHangingLock(0);
 	startTask(PixyPackets);
 }
@@ -112,7 +112,7 @@ float AutonCubeMid()
 	currentHeading += ROTATE_RIGHT / 1.9;
 	driveHoldHeading(-300, -65, currentHeading);
 	SetLiftHeight(LIFT_LOW_HEIGHT);
-	driveHoldHeading(-750, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
+	driveHoldHeading(-850, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
 
 	currentHeading += ROTATE_RIGHT * (0.9/1.9);
 	driveTurnInPlace(currentHeading);
@@ -456,10 +456,14 @@ void PSC()
 
 task autonomous()
 {
+	PSC();
+	/*
+	autoQuit = 0;
 	float currentHeading = AutonCubeMid();
 	toggleSonar(BACK_ON);
 	currentHeading = PixyBackFromFence(-1, currentHeading);
 	drivePower(0);
+	*/
 	//PixyTurn();
 	//PixyAutoNew();
 	/*

@@ -501,7 +501,7 @@ task PixyPackets
     //pixyPrint(&robotPixy);
 
     if (largestBlock != 0)
-      pixyPrint(largestBlock);
+      pixyPrintBlock(largestBlock);
     else
       writeDebugStreamLine("---");
 

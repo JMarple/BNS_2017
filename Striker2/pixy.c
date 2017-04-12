@@ -384,7 +384,7 @@ short setServos(Pixy *this, unsigned short s0, unsigned short s1) {
 *
 * @param 	this	Pointer to PixyBlock struct.
 */
-void pixyPrint(PixyBlock *this) {
+void pixyPrintBlock(PixyBlock *this) {
 	if (this == NULL) {
 		return;
 	}
@@ -419,7 +419,7 @@ void pixyPrint(Pixy *this) {
 		{
 			writeDebugStream("\tblock %d: ", i);
 
-			pixyPrint(&this->blocks[i]);
+			pixyPrintBlock(&this->blocks[i]);
 		}
 	}
 }

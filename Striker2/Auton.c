@@ -22,6 +22,22 @@
 #define ROTATE_RIGHT -90
 #define ROTATE_LEFT 90
 
+#define TIMEOUT_TIME 5000
+#define TIMEOUT_TIMER T1
+
+int autoQuit = 0;
+
+void forceQuitAuton()
+{
+	writeDebugStreamLine("Force AutoQuit");
+	autoQuit = 1;
+}
+
+int shouldKeepRunning()
+{
+	return (time1[TIMEOUT_TIMER] < TIMEOUT_TIME && !autoQuit);
+}
+
 void brake(int dir)
 {
   drivePower(-20*dir);
@@ -33,7 +49,8 @@ void driveStraight(int distance, int speed)
 {
   resetEncoders();
 
-  while (1==1)
+  clearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     leftDrive(speed);
     rightDrive(speed);
@@ -47,7 +64,8 @@ void driveStraight(int distance, int speed)
 
 void waitForLiftUp(int value)
 {
-  while (1)
+  clearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     if (getLiftHeight() < value) break;
   }
@@ -55,7 +73,8 @@ void waitForLiftUp(int value)
 
 void waitForLiftDown(int value)
 {
-  while (1)
+  clearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     if (getLiftHeight() > value) break;
   }
@@ -69,7 +88,8 @@ void driveCorrectedSmoothTurn(
   PIDInit(&posPID, 1.0, 0, 1000);
   posPID.maxOutput = maxPIDOutput;
 
-  while (1==1)
+  clearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     // Break if close enough to target angle
     float posError =
@@ -96,7 +116,8 @@ void driveOneWheel(float targetAngle, int pidTuning = PID_INPLACE_HANGING)
   if (pidTuning == PID_INPLACE_HANGING) PIDInit(&posPID, 8, 0, 0.7);
   posPID.maxOutput = 70;
 
-  while (1==1)
+  ClearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     // Break if close enough to target angle
     float posError = limitTo180(targetAngle - GyroGetAngle());
@@ -125,7 +146,8 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
   else if (pidTuning == PID_INPLACE_HANGING) PIDInit(&posPID, 2.5, 0, 0.25);
   posPID.maxOutput = maxPIDOutput;
 
-  while (1==1)
+  ClearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     // Break if close enough to target angle
     float posError =
@@ -153,7 +175,8 @@ int driveSmoothTurn(
   speed /= 3;
   int speedSgn = sgn(speed);
 
-  while (1==1)
+  ClearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     // Break if close enough to target angle
     float posError =
@@ -228,7 +251,8 @@ int driveHoldHeading(
   if (accel_type != ACCEL_NONE)
     speed = accel_startspeed;
 
-  while (1==1)
+  clearTimer(TIMEOUT_TIMER);
+  while (shouldKeepRunning())
   {
     float error = limitTo180(targetAngle - GyroGetAngle());
     float pidResult = PIDUpdate(&headingpid, error, 0.01);

@@ -73,12 +73,14 @@ task usercontrol()
 		if (vexRT(Btn8L)) SensorValue[hangingLock] = 1;
 		if (vexRT(Btn8R)) SensorValue[hangingLock] = 0;
 
+		if (vexRT[Btn7R]) forceQuitAuton();
+
 		if (vexRT[Btn7L])
 		{
 		  static float currentHeading = 0;
 		  //currentHeading += ROTATE_LEFT / 2;
 		  //driveOneWheel(currentHeading);
-		  PSC();
+		  //PSC();
 		  //AutonCubeFar();
 		  //DrivePixyStraight(1000, 60);
 		  //driveHoldHeading(100, 80, 0);
