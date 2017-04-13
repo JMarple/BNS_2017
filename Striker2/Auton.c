@@ -138,7 +138,7 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
 {
   struct PID posPID;
 
-  if (pidTuning == PID_INPLACE_TURN_NORMAL) PIDInit(&posPID, 2, 0, 0.18);
+  if (pidTuning == PID_INPLACE_TURN_NORMAL) PIDInit(&posPID, 1.8, 0, 0.18);
   else if (pidTuning == PID_INPLACE_TURN_SMALL_NORMAL) PIDInit(&posPID, 2, 0, 0.15);
   else if (pidTuning == PID_INPLACE_TURN_PUSHER_FALLING) PIDInit(&posPID, 2, 0, 0.05);
   else if (pidTuning == PID_INPLACE_TURN_WITH_CUBE) PIDInit(&posPID, 2, 0, 0.25);

@@ -500,10 +500,10 @@ task PixyPackets
     if (largestBlock != 0) largestBlockY = largestBlock->y;
     //pixyPrint(&robotPixy);
 
-    if (largestBlock != 0)
+    /*if (largestBlock != 0)
       pixyPrintBlock(largestBlock);
     else
-      writeDebugStreamLine("---");
+      writeDebugStreamLine("---");*/
 
     delay(50);
   }
