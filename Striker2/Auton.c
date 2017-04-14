@@ -22,7 +22,7 @@
 #define ROTATE_RIGHT -90
 #define ROTATE_LEFT 90
 
-#define TIMEOUT_TIME 5000
+#define TIMEOUT_TIME 2500
 #define TIMEOUT_TIMER T1
 
 int autoQuit = 0;
@@ -140,10 +140,13 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
 
   if (pidTuning == PID_INPLACE_TURN_NORMAL) PIDInit(&posPID, 1.8, 0, 0.18);
   else if (pidTuning == PID_INPLACE_TURN_SMALL_NORMAL) PIDInit(&posPID, 2, 0, 0.15);
-  else if (pidTuning == PID_INPLACE_TURN_PUSHER_FALLING) PIDInit(&posPID, 2, 0, 0.05);
+  else if (pidTuning == PID_INPLACE_TURN_PUSHER_FALLING) PIDInit(&posPID, 2.5, 0, 0.05);
   else if (pidTuning == PID_INPLACE_TURN_WITH_CUBE) PIDInit(&posPID, 2, 0, 0.25);
   else if (pidTuning == PID_INPLACE_TURN_PUSHER) PIDInit(&posPID, 2, 0, 0.2);
   else if (pidTuning == PID_INPLACE_HANGING) PIDInit(&posPID, 2.5, 0, 0.25);
+  else if (pidTuning == PID_INPLACE_TURN_WITH_DRAGGING_STARS) PIDInit(&posPID, 2.0, 0, 0.1);
+  else if (pidTuning == PID_INPLACE_NUDGE) PIDInit(&posPID, 4.0, 0, 0);
+
   posPID.maxOutput = maxPIDOutput;
 
   ClearTimer(TIMEOUT_TIMER);
@@ -155,8 +158,16 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
 
     float speed = PIDUpdate(&posPID, posError, 0.01);
 
-    if (abs(posError) <= cutoff) break;
-    if (abs(posError) <= 20 && abs(gyroYawRate) < 0.3) break;
+    if (abs(posError) <= cutoff)
+    {
+      writeDebugStreamLine("Drive turn got to cutoff");
+      break;
+    }
+    if (abs(posError) <= 20 && abs(gyroYawRate) < 0.3)
+    {
+      writeDebugStreamLine("Drive Turn ended due to gyroYawRate being 0");
+      break;
+    }
 
     leftDrive(-speed);
     rightDrive(speed);

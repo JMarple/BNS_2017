@@ -6,6 +6,7 @@
 #define LIFT_MID_CUBE_HEIGHT 2500
 #define LIFT_SIDE_PUSH_HEIGHT 2000
 #define LIFT_MID_HEIGHT 1900
+#define LIFT_NEARLY_HIGH_HEIGHT 1700
 #define LIFT_HIGH_HEIGHT 1400
 
 #define PID_INPLACE_TURN_NORMAL 0x00
@@ -14,6 +15,8 @@
 #define PID_INPLACE_TURN_WITH_CUBE 0x03
 #define PID_INPLACE_HANGING 0x04
 #define PID_INPLACE_TURN_PUSHER_FALLING 0x05
+#define PID_INPLACE_TURN_WITH_DRAGGING_STARS 0x06
+#define PID_INPLACE_NUDGE 0x07
 
 // Function Prototypes
 void SetMotorLinear(tMotor mot, float dutyCycle);
@@ -55,7 +58,7 @@ int getLeftEncoder()
 
 int getRightEncoder()
 {
-  return -SensorValue[rightEncoder];
+  return SensorValue[rightEncoder];
 }
 
 int getLeftLine()

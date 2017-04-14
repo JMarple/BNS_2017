@@ -206,7 +206,7 @@ void parseMT2Data(struct MT2Data* out, char* data, int len)
   }
 }
 
-void PrintMTConfigurations(TUARTs uartPort)
+/*void PrintMTConfigurations(TUARTs uartPort)
 {
   MTMessage msg, sendMsg;
 
@@ -245,7 +245,7 @@ void PrintMTConfigurations(TUARTs uartPort)
   for (int i = 0; i < msg.len; i++) writeDebugStream("%c", msg.data[i]);
   writeDebugStreamLine("");
 }
-
+*/
 float gyroCalibYaw = 0;
 float gyroYaw = 0;
 float gyroYawRate = 0;

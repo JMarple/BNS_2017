@@ -174,7 +174,6 @@ float OnePass(int dir, float currentHeading, int oldColumn = 3)
 
 
 	return currentHeading;
-
 }
 
 void DrivePixyStraight(int distance, int speed)
