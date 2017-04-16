@@ -10,6 +10,7 @@
 #define DRIVE_FORWARD_SONAR 4
 #define DRIVE_LEFT_LINES 5
 #define DRIVE_RIGHT_LINES 6
+#define DRIVE_PIXY_CLAW 7
 #define LINE_DETECT_VALUE 1900
 
 #define ACCEL_NONE 0
@@ -31,6 +32,7 @@ void forceQuitAuton()
 {
 	writeDebugStreamLine("Force AutoQuit");
 	autoQuit = 1;
+	stopTask(liftHeight);
 }
 
 int shouldKeepRunning()
@@ -357,6 +359,11 @@ int driveHoldHeading(
     {
       int sonarVal = getFrontSonar();
       if (sonarVal > distance && sonarVal > 0) break;
+    }
+
+    if (type == DRIVE_PIXY_CLAW)
+    {
+    	if (largestBlockY > 120) break;
     }
 
     delay(10);

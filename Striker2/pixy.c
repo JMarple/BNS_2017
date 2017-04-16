@@ -106,9 +106,9 @@ PixyBlock* pixyGetLargestBlock(Pixy* this, int sig)
 		//if (this->blocks[i].signature != sig) continue;
 
 		//filter out part of the fov
-		if (this->blocks[i].y < 110
-			&& this->blocks[i].x > ((-2.0/9.0) * this->blocks[i].y + 90.)
-			&& this->blocks[i].x < ((2.0/9.0) * this->blocks[i].y + 260.))
+		if ( ( this->blocks[i].y < 110 && this->blocks[i].x > ((-2.0/9.0) * this->blocks[i].y + 90.) && this->blocks[i].x < ((2.0/9.0) * this->blocks[i].y + 260.) )
+			|| ( this->blocks[i].x > 100 && this->blocks[i].x < 250 && this->blocks[i].y < 110)
+			)
 		{
 			int val = this->blocks[i].width * this->blocks[i].height;
 			if (val > largest)

@@ -1,9 +1,18 @@
 #ifndef __USER_CONTROL_C__
 #define __USER_CONTROL_C__
 
+task autokiller()
+{
+	while (true)
+	{
+		if (vexRT[Btn7R]) forceQuitAuton();
+	}
+}
+
 task usercontrol()
 {
 	stopTask(liftHeight);
+	startTask(autoKiller);
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
 	int X = 0, Y1 = 0, Y2 = 0, threshold = 15;
 	int direction = 0;
@@ -78,9 +87,11 @@ task usercontrol()
 		if (vexRT[Btn7L])
 		{
 		  float currentHeading = 0;
+		  //PixyTurn();
+		  PixyAuton();
 		  //currentHeading += ROTATE_LEFT / 2;
 		  //driveOneWheel(currentHeading);
-		  PSC();
+		  //PSC();
 		  //startTask(liftHeight);
 		  //currentHeading = PushTwo(currentHeading);
 		  //currentHeading = PSC_HangingPushing(currentHeading);
