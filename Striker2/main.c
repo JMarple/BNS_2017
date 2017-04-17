@@ -45,6 +45,14 @@ void pre_auton()
 	startTask(PixyPackets);
 }
 
+void clawFlip()
+{
+	SetLiftHeight(LIFT_LOW_HEIGHT);
+	  setClaw(1);
+	  wait1Msec(100);
+	  setClaw(0);
+}
+
 float PushTwo(float currentHeading);
 float PSC_HangingPushing(float currentHeading);
 
@@ -59,10 +67,7 @@ void PSC()
     setHangingLock(0);
     //toggleSonar(BACK_ON);
 
-	  SetLiftHeight(LIFT_LOW_HEIGHT);
-	  setClaw(1);
-	  wait1Msec(100);
-	  setClaw(0);
+	  clawFlip();
 
 	  driveHoldHeading(75, 80, currentHeading);
 	  setClaw(1);
@@ -297,31 +302,6 @@ void PSC()
 	  currentHeading = PSC_HangingPushing(currentHeading);
 }
 
-task autonomous()
-{
-	PSC();
-	/*
-	autoQuit = 0;
-	float currentHeading = AutonCubeMid();
-	toggleSonar(BACK_ON);
-	currentHeading = PixyBackFromFence(-1, currentHeading);
-	drivePower(0);
-	*/
-	//PixyTurn();
-	//PixyAutoNew();
-	/*
-	if(SensorValue(selector2) > 3000)
-	{
-  	PSC();
-  }
-  else
-  {
-  	AutonCubeMid();
-  }
-  */
-}
-
-
 void AutonCubeFar()
 {
   startTask(liftHeight);
@@ -329,7 +309,7 @@ void AutonCubeFar()
 
   // Turn a little and pick up cube
   currentHeading += ROTATE_RIGHT * 0.15;
-  setClaw(0);
+  clawFlip();
   driveHoldHeading(600, 100, currentHeading, DRIVE_ENCODERS);
 
   currentHeading += ROTATE_RIGHT * 0.35;
@@ -365,8 +345,8 @@ float AutonCubeMid()
 
   // Turn a little and pick up cube
   currentHeading += ROTATE_RIGHT * 0.15;
-  setClaw(0);
-  driveHoldHeading(600, 100, currentHeading, DRIVE_ENCODERS);
+  clawFlip();
+  driveHoldHeading(700, 100, currentHeading, DRIVE_ENCODERS);
   setClaw(1);
   SetLiftHeight(LIFT_HIGH_HEIGHT);
 
@@ -386,18 +366,19 @@ float AutonCubeMid()
   wait1Msec(250);
 	drivePower(0);
 
-	currentHeading += ROTATE_RIGHT / 1.9;
+	currentHeading += ROTATE_RIGHT / 1.7;
 	driveHoldHeading(-300, -65, currentHeading);
 	SetLiftHeight(LIFT_LOW_HEIGHT);
-	driveHoldHeading(-850, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
+	driveHoldHeading(-1000, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
 
-	currentHeading += ROTATE_RIGHT * (0.9/1.9);
+	currentHeading += ROTATE_RIGHT * (0.9/1.7);
 	driveTurnInPlace(currentHeading);
-  driveHoldHeading(1700, 110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 60);
+  driveHoldHeading(2000, 110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 60);
   setClaw(1);
   drivePower(0);
   wait1Msec(300);
   SetLiftHeight(LIFT_HIGH_HEIGHT);
+  waitForLiftUp(LIFT_LITTLE_BIT_HEIGHT);
 
   currentHeading += ROTATE_LEFT;
   driveTurnInPlace(currentHeading);
@@ -518,6 +499,21 @@ float PushTwo(float currentHeading)
 	wait1Msec(750); // Push #2
 
 	return currentHeading;
+}
+
+task autonomous()
+{
+	autoQuit = 0;
+	float currentHeading;
+	if(SensorValue(selector2) > 3000)
+	{
+  	PSC();
+  }
+  else
+  {
+  	currentHeading = AutonCubeMid();
+  	PixyAuton(currentHeading);
+  }
 }
 
 #include "UserControl.c"

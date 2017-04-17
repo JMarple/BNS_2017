@@ -23,7 +23,7 @@
 #define ROTATE_RIGHT -90
 #define ROTATE_LEFT 90
 
-#define TIMEOUT_TIME 2500
+#define TIMEOUT_TIME 3500
 #define TIMEOUT_TIMER T1
 
 int autoQuit = 0;

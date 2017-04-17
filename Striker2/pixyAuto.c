@@ -1,17 +1,22 @@
 const int PIXY_MID = 170;
 
 //turns in place to face an object, returns the new angle
-float PixyTurn(float cutoff = 5)
+float PixyTurn(float cutoff = 30)
 {
 	struct PID pixyHeadingPID;
-	PIDInit(&pixyHeadingPID, 0.7, 0, 0);
+	PIDInit(&pixyHeadingPID, 0.8, 0, 0);
+
+	float error = 0;
+	error = largestBlockX - PIXY_MID;
+
+	int dir = sgn(error);
 
 	while (1==1)
 	{
-		float error = 0;
+
 		error = largestBlockX - PIXY_MID;
-		writeDebugStreamLine("largest x: %i", largestBlockX);
-		writeDebugStreamLine("error: %i", error);
+		//writeDebugStreamLine("largest x: %i", largestBlockX);
+		//writeDebugStreamLine("error: %i", error);
 
 		float pidResult = PIDUpdate(&pixyHeadingPID, error, 1);
 
@@ -31,8 +36,13 @@ float PixyTurn(float cutoff = 5)
 		}
 		*/
 
-		if (abs(error) <= cutoff) break;
-		if (abs(gyroYawRate) < 0.3) break;
+		if (abs(error) <= cutoff)
+		{
+			leftDrive(-5 * dir);
+			rightDrive(5 * dir);
+			break;
+		}
+		//if (abs(gyroYawRate) < 0.3) break;
 		if (autoQuit == 1) break;
 		delay(50);
 	}
@@ -79,7 +89,7 @@ float PixyBackToLine(float currentHeading, int dir = 1)
 	driveHoldHeading(-300, -70, currentHeading, DRIVE_ENCODERS, ACCEL_SLOW, -40);
 	SetLiftHeight(LIFT_LOW_HEIGHT);
 	driveHoldHeading(-700, -70, currentHeading, DRIVE_LINES);
-	//driveHoldHeading(40, 70, currentHeading, DRIVE_ENCODERS, ACCEL_SLOW, 40);
+	driveHoldHeading(20, 70, currentHeading, DRIVE_ENCODERS, ACCEL_SLOW, 40);
 	brake(1);
 	drivePower(0);
 
@@ -89,11 +99,10 @@ float PixyBackToLine(float currentHeading, int dir = 1)
 	return currentHeading;
 }
 
-void PixyAuton()
+void PixyAuton(float currentHeading = 0)
 {
 	startTask(liftHeight);
 	GyroResetAngle(0);
-	float currentHeading = 0;
 	SetLiftHeight(LIFT_HIGH_HEIGHT);
 	setClaw(0);
 	toggleSonar(BACK_ON);

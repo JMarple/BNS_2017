@@ -12,7 +12,7 @@ task autokiller()
 task usercontrol()
 {
 	stopTask(liftHeight);
-	startTask(autoKiller);
+	startTask(autokiller);
 	//Create "deadzone" variables. Adjust threshold value to increase/decrease deadzone
 	int X = 0, Y1 = 0, Y2 = 0, threshold = 15;
 	int direction = 0;
@@ -87,8 +87,8 @@ task usercontrol()
 		if (vexRT[Btn7L])
 		{
 		  float currentHeading = 0;
-		  //PixyTurn();
-		  PixyAuton();
+		  PixyTurn();
+		  //PixyAuton();
 		  //currentHeading += ROTATE_LEFT / 2;
 		  //driveOneWheel(currentHeading);
 		  //PSC();
