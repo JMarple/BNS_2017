@@ -42,21 +42,16 @@ task usercontrol()
 
 		if(vexRT(Btn6U) /*&& SensorValue(pot) < 2600*/)
 		{
+		  SetLiftHeight(LIFT_HIGH_HEIGHT);
       liftPower(127);
 			direction = 1;
-			//if(SensorValue(pot) > 2500) {
-			//	SensorValue(intake) = 0;
-			//}
 		}
 		else if(vexRT(Btn6D))
 		{
+
       liftPower(-127);
 			direction = -1;
-	  }/*
-	  else if(SensorValue(pot) > 2600)
-	  {
-	  	liftPower(-15);
-	  }*/
+	  }
 	  else
 	  {
 	  	liftPower(direction * 15);
@@ -67,14 +62,8 @@ task usercontrol()
 			//SensorValue(wheels) = !SensorValue(wheels);
 			wait1Msec(300);
 		}
-		else if(vexRT(Btn5U))
-		{
-			SensorValue(intake) = 1;
-		}
-		else if(vexRT(Btn5D))
-		{
-			SensorValue(intake) = 0;
-		}
+
+		SensorValue(intake) = vexRT(Btn5U);
 
 		if (vexRT(Btn8U)) SensorValue[pusher] = 1;
 		if (vexRT(Btn8D)) SensorValue[pusher] = 0;
@@ -87,9 +76,10 @@ task usercontrol()
 		if (vexRT[Btn7L])
 		{
 		  float currentHeading = 0;
-		  AutonCubeNear(FULL_NEAR_MODE);
-		  //PSC();
+
+		  //PixyTurn();
 		  //PixyAuton();
+		  AutonCubeMid();
 		  //currentHeading += ROTATE_LEFT / 2;
 		  //driveOneWheel(currentHeading);
 		  //PSC();

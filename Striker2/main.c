@@ -48,9 +48,10 @@ void pre_auton()
 void clawFlip()
 {
 	SetLiftHeight(LIFT_LOW_HEIGHT);
-	  setClaw(1);
-	  wait1Msec(100);
-	  setClaw(0);
+  setClaw(1);
+  wait1Msec(100);
+  setClaw(0);
+  wait1Msec(100);
 }
 
 float PushTwo(float currentHeading);
@@ -131,13 +132,14 @@ void PSC()
 	  setClaw(1);
 	  SetLiftHeight(LIFT_MID_HEIGHT);
 	  currentHeading += ROTATE_LEFT / 2.5;
-	  driveHoldHeading(-350, -127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
+	  driveHoldHeading(-375, -127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
     brake(-0.5);
     currentHeading += ROTATE_LEFT * 1.5/2.5;
 	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_WITH_CUBE);
 
 	  // LOADING #2
-	  //wait1Msec(250);
+	  drivePower(0);
+	  wait1Msec(500);
 
 	  // Score #2 cubes.
 	  SetLiftHeight(LIFT_HIGH_HEIGHT);
@@ -174,6 +176,9 @@ void PSC()
     SetLiftHeight(LIFT_HIGH_HEIGHT);
     driveHoldHeading(-150, -100, currentHeading);
 
+    drivePower(0);
+    waitForLiftUp(LIFT_NEARLY_HIGH_HEIGHT);
+
     currentHeading += ROTATE_LEFT * 0.5;
     driveTurnInPlace(currentHeading);
 
@@ -190,9 +195,9 @@ void PSC()
 	  wait1Msec(250);
 
 	  // Nudge 4th star if it happens to still be there
-	  currentHeading += ROTATE_RIGHT;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 30);
-	  currentHeading += ROTATE_LEFT;
+	  //currentHeading += ROTATE_RIGHT;
+	  //driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 30);
+	  //currentHeading += ROTATE_LEFT;
     driveHoldHeading(-75, -100, currentHeading);
 	  // --- Delete Later
 	  //SetLiftHeight(LIFT_HIGH_HEIGHT);
@@ -296,13 +301,20 @@ void PSC()
 	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 35);
 	  currentHeading += ROTATE_RIGHT;
 
+	  return;
+
 	  // Push & Hang
 	  currentHeading += ROTATE_LEFT * 0.30;
     currentHeading = PushTwo(currentHeading);
 	  currentHeading = PSC_HangingPushing(currentHeading);
 }
 
-void AutonCubeFar()
+#define HALF_FAR_MODE 0
+#define FULL_FAR_MODE 1
+
+// If type == 0, "Half-Far" mode
+// Else "Far" mode
+void AutonCubeFar(int type = 0)
 {
   startTask(liftHeight);
   float currentHeading = 0;
@@ -315,13 +327,71 @@ void AutonCubeFar()
   currentHeading += ROTATE_RIGHT * 0.35;
 
   setClaw(1);
-  SetLiftHeight(LIFT_LITTLE_BIT_HEIGHT);
+  SetLiftHeight(LIFT_MID_HEIGHT);
   driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
-  driveHoldHeading(500, 100, currentHeading);
+
+  if (type == HALF_FAR_MODE)
+  {
+    driveHoldHeading(500, 100, currentHeading);
+  }
+  else
+  {
+    driveHoldHeading(1000, 100, currentHeading);
+  }
   currentHeading += ROTATE_LEFT;
 
   SetLiftHeight(LIFT_HIGH_HEIGHT);
   driveTurnInPlace(currentHeading);
+  waitForLiftUp(LIFT_MID_CUBE_HEIGHT);
+
+  // Score #1
+  driveHoldHeading(200, 80, currentHeading);
+  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES, ACCEL_FAST, 80);
+  setClaw(0);
+  drivePower(127);
+  wait1Msec(100);
+  drivePower(50);
+  wait1Msec(250);
+	drivePower(0);
+
+
+  drivePower(0);
+}
+
+#define HALF_NEAR_MODE 0
+#define FULL_NEAR_MODE 1
+
+// If type == 0, "Half-Far" mode
+// Else "Far" mode
+void AutonCubeNear(int type = 0)
+{
+  startTask(liftHeight);
+  float currentHeading = 0;
+
+  // Turn a little and pick up cube
+  currentHeading += ROTATE_RIGHT * 0.15;
+  clawFlip();
+  driveHoldHeading(600, 100, currentHeading, DRIVE_ENCODERS);
+
+  currentHeading += ROTATE_RIGHT * 0.35;
+
+  setClaw(1);
+  SetLiftHeight(LIFT_MID_HEIGHT);
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
+
+  if (type == HALF_NEAR_MODE)
+  {
+    driveHoldHeading(-200, -100, currentHeading);
+  }
+  else
+  {
+    driveHoldHeading(-600, -100, currentHeading);
+  }
+  currentHeading += ROTATE_LEFT;
+
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  driveTurnInPlace(currentHeading);
+  drivePower(0);
   waitForLiftUp(LIFT_MID_CUBE_HEIGHT);
 
   // Score #1
@@ -380,7 +450,7 @@ float AutonCubeMid()
   SetLiftHeight(LIFT_HIGH_HEIGHT);
   waitForLiftUp(LIFT_LITTLE_BIT_HEIGHT);
 
-  currentHeading += ROTATE_LEFT;
+  currentHeading += ROTATE_LEFT + ROTATE_LEFT * (0.2/1.7);
   driveTurnInPlace(currentHeading);
 
   driveHoldHeading(400, 80, currentHeading);
