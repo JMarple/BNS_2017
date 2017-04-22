@@ -3,7 +3,9 @@
 
 #include "./competition.c"
 #include "./setup.c"
+#include "pixy.c"
 #include "./auton.c"
+#include "./adaptive.c"
 
 void pre_auton() {
 	masterSetup();
