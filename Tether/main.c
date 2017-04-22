@@ -3,7 +3,7 @@
 
 #include "./competition.c"
 #include "./setup.c"
-#include "pixy.c"
+#include "./pixy.c"
 #include "./auton.c"
 #include "./adaptive.c"
 
@@ -32,6 +32,8 @@ task masterAuton() {
 	sleep(1000);
 	masterSetDrive(STOP);
 	masterSetClaw(OPENED);
+	startTask(PixyPackets);
+	PixyAuton();
 }
 
 task slaveAuton() {
@@ -39,7 +41,20 @@ task slaveAuton() {
 	slaveSetClaw(OPENED);
 	sleep(4000);
 	slaveSetDrive(FORWARD);
-	sleep(267);
+	sleep(2500);
+	slaveSetClaw(CLOSED);
+	slaveSetDrive(BACKWARD);
+	sleep(200);
+	slaveSetTurn(RIGHT);
+	slaveSetLift(UP);
+	sleep(500);
+	slaveSetDrive(STOP);
+	sleep(200);
+	slaveSetLift(HOLD_UP);
+	slaveSetDrive(FORWARD);
+	sleep(1500);
+	slaveSetDrive(STOP);
+	slaveSetClaw(OPENED);
 }
 
 task autonomous() {

@@ -1,3 +1,6 @@
+#include "./pixy.c"
+#include "./auton.c"
+
 Pixy robotPixy;
 PixyBlock* largestBlock;
 PixyBlock* largestBlockInClaw;
@@ -37,25 +40,19 @@ task PixyPackets
 
 const int PIXY_MID = 170;
 
-//turns in place to face an object, returns the new angle
-float PixyTurn(float cutoff = 30)
+//turns in place to face an object
+void PixyTurn(float cutoff = 30)
 {
-	struct PID pixyHeadingPID;
-	PIDInit(&pixyHeadingPID, 0.8, 0, 0);
-
 	float error = 0;
 	error = largestBlockX - PIXY_MID;
 
 	int dir = sgn(error);
 
-	while (1==1)
+	masterSetTurn(dir * 127);
+
+	while (true)
 	{
-
 		error = largestBlockX - PIXY_MID;
-
-		float pidResult = PIDUpdate(&pixyHeadingPID, error, 1);
-
-		masterSetDrive(pidResult, -pidResult);
 
 		if (abs(error) <= cutoff)
 		{
@@ -66,8 +63,6 @@ float PixyTurn(float cutoff = 30)
 		if (autoQuit == 1) break;
 		delay(50);
 	}
-	//however much it turned, assume it was the right amount for the purposes of correcting
-	return SensorValue(MASTER_GYRO);
 }
 
 void PixyScore()
