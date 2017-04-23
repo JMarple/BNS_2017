@@ -3,6 +3,7 @@
 Authors: Justin Marple (jmarple@umass.edu) & Owen Marshall 
 
  - Striker2 (aka Lawnmower) is the skills robot for BNS
+ - Tether is the match tether bot for BNS
  - Tallywaker is the match robot for BNS2
  
  Notes:
