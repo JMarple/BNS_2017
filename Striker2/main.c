@@ -461,7 +461,7 @@ float AutonCubeMid()
   currentHeading += ROTATE_LEFT + ROTATE_LEFT * (0.2/1.7);
   driveTurnInPlace(currentHeading);
 
-  driveHoldHeading(400, 80, currentHeading);
+  driveHoldHeading(500, 80, currentHeading);
   driveHoldHeading(550, 127, currentHeading, DRIVE_LINES, ACCEL_FAST, 80);
   setClaw(0);
   drivePower(127);
