@@ -86,9 +86,21 @@ task usercontrol()
 
 		if (vexRT[Btn7L])
 		{
-		  float currentHeading = 0;
-		  AutonCubeNear(FULL_NEAR_MODE);
+
+
 		  //PSC();
+		  startTask(PSC_Driver);
+		  //while (1==1);
+		  while (vexRT[Btn7R] == 0)
+			{
+			  delay(20);
+			}
+		  //stopTask(PSC_Driver);
+
+		  //AutonCubeNear(FULL_NEAR_MODE);
+		  //PSC();
+		  //SetLiftHeight(LIFT_HIGH_HEIGHT);
+		  //PSC_HangingPushing(currentHeading);
 		  //PixyAuton();
 		  //currentHeading += ROTATE_LEFT / 2;
 		  //driveOneWheel(currentHeading);

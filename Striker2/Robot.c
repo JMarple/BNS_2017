@@ -7,7 +7,7 @@
 #define LIFT_SIDE_PUSH_HEIGHT 2000
 #define LIFT_MID_HEIGHT 1900
 #define LIFT_NEARLY_HIGH_HEIGHT 1700
-#define LIFT_HIGH_HEIGHT 1400
+#define LIFT_HIGH_HEIGHT 1450
 
 #define PID_INPLACE_TURN_NORMAL 0x00
 #define PID_INPLACE_TURN_PUSHER 0x01
@@ -229,7 +229,12 @@ void GyroCalibration()
 
 void GyroResetAngle(float value)
 {
-  gyroYaw = value;
+  heading.data[0] = 1;
+  heading.data[1] = 0;
+  heading.data[2] = 0;
+  heading.data[3] = 0;
+  packetCount = 0;
+  previousGyroYaw = 0;
 }
 
 float GyroGetAngle()
@@ -463,7 +468,7 @@ task liftHeight()
     float value = PIDUpdate(&liftpid, (angle - targetLiftHeight), 0.01);
     _liftPower = value;
     liftPower(value);
-    //writeDebugStreamLine("%d %f %d", targetLiftHeight, _liftPower, motor[liftL1]);
+    writeDebugStreamLine("%d %f %d", targetLiftHeight, _liftPower, motor[liftL1]);
     delay(10);
   }
 }

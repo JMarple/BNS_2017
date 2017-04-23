@@ -11,7 +11,7 @@
 #define DRIVE_LEFT_LINES 5
 #define DRIVE_RIGHT_LINES 6
 #define DRIVE_PIXY_CLAW 7
-#define LINE_DETECT_VALUE 1900
+#define LINE_DETECT_VALUE 700
 
 #define ACCEL_NONE 0
 #define ACCEL_SLOW 2
@@ -33,6 +33,7 @@ void forceQuitAuton()
 	writeDebugStreamLine("Force AutoQuit");
 	autoQuit = 1;
 	stopTask(liftHeight);
+	stopTask(PSC_Driver);
 }
 
 int shouldKeepRunning()
@@ -291,7 +292,7 @@ int driveHoldHeading(
     int lEnc = getLeftEncoder();
     int rEnc = getRightEncoder();
 
-    if (type == DRIVE_ENCODERS || type == DRIVE_LINES)
+    if (type == DRIVE_ENCODERS || type == DRIVE_LINES || type == DRIVE_RIGHT_LINES)
     {
       if (fabs(lEnc + rEnc) / 2 > distance)
       {
@@ -348,6 +349,7 @@ int driveHoldHeading(
     if (type == DRIVE_BACK_SONAR_FORWARD)
     {
       int sonarVal = getBackSonar();
+      writeDebugStreamLine("BS = %d\n", sonarVal);
       if (sonarVal > distance && sonarVal > 0)
       {
         writeDebugStreamLine("Back Sonar Forward Break = %d", sonarVal);

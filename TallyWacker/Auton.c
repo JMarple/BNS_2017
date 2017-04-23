@@ -13,7 +13,7 @@
 #define DRIVE_PIXY_CLAW 7
 #define LINE_DETECT_VALUE 500
 
-#define DISTANCE_MULTIPLIER 2.5
+#define DISTANCE_MULTIPLIER 0.8
 
 #define ACCEL_NONE 0
 #define ACCEL_SLOW 2
@@ -247,7 +247,7 @@ task delayedDeploy()
 }
 
 int driveHoldHeading(
-	int distance,
+	float distance,
 	int maxSpeed,
 	float targetAngle,
 	int type = TYPE_FORWARD,

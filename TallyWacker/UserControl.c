@@ -79,7 +79,7 @@ task usercontrol()
 
 		  //PixyTurn();
 		  //PixyAuton();
-		  AutonCubeMid();
+		  //AutonCubeMid();
 		  //currentHeading += ROTATE_LEFT / 2;
 		  //driveOneWheel(currentHeading);
 		  //PSC();

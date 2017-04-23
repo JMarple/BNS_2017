@@ -249,8 +249,10 @@ void parseMT2Data(struct MT2Data* out, char* data, int len)
 float gyroCalibYaw = 0;
 float gyroYaw = 0;
 float gyroYawRate = 0;
+float previousGyroYaw = 0;
 MT2Data mtData;
 int packetCount = 0;
+Quaternion heading;
 
 task xsens()
 {
@@ -260,7 +262,6 @@ task xsens()
 
   //PrintMTConfigurations(uartPort);
 
-  Quaternion heading;
   heading.data[0] = 1;
   heading.data[1] = 0;
   heading.data[2] = 0;
@@ -295,7 +296,7 @@ task xsens()
 	    //}
 
 	    mulQuaternions(&heading, &heading, &mtData.dQ);
-	    static float previousGyroYaw = 0;
+
 	    //static float complementaryYaw = 0;
 	    gyroYaw = getYaw(&heading) - gyroCalibYaw*packetCount;
 

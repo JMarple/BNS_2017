@@ -45,17 +45,21 @@ void pre_auton()
   startTask(GyroTask);
 
   //writeDebugStreamLine("Gyro calib done");
-	setClaw(0);
+	setClaw(1);
 	setHangingLock(0);
 	startTask(PixyPackets);
+
 }
 
 void clawFlip()
 {
-	SetLiftHeight(LIFT_LOW_HEIGHT);
-  setClaw(1);
-  wait1Msec(100);
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  drivePower(0);
+  wait1Msec(200);
   setClaw(0);
+	SetLiftHeight(LIFT_SUPER_LOW_HEIGHT);
+  wait1Msec(100);
+  SetLiftHeight(LIFT_LOW_HEIGHT);
 }
 
 void AutonCubeFar()
@@ -90,13 +94,12 @@ void AutonCubeFar()
   wait1Msec(250);
 	drivePower(0);
 
-
   drivePower(0);
 }
 
 float AutonCubeMid()
 {
-  startTask(liftHeight);
+  //startTask(liftHeight);
   float currentHeading = 0;
 
   // Turn a little and pick up cube
@@ -154,8 +157,11 @@ float AutonCubeMid()
 
 task autonomous()
 {
+  /*SensorValue[liftEncoder] = 0;
+  startTask(liftHeight);
 	autoQuit = 0;
-	AutonCubeMid();
+	clawFlip();
+	AutonCubeMid();*/
 	/*float currentHeading;
 	if(SensorValue(selector2) > 3000)
 	{
