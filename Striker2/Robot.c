@@ -23,16 +23,16 @@ void SetMotorLinear(tMotor mot, float dutyCycle);
 
 void leftDrive(int power)
 {
-	SetMotorLinear(driveL1, power/127.0);
-	SetMotorLinear(driveL2, power/127.0);
-	SetMotorLinear(driveL3, power/127.0);
+  SetMotorLinear(driveL1, power/127.0);
+  SetMotorLinear(driveL2, power/127.0);
+  SetMotorLinear(driveL3, power/127.0);
 }
 
 void rightDrive(int power)
 {
-	SetMotorLinear(driveR1, power/127.0);
-	SetMotorLinear(driveR2, power/127.0);
-	SetMotorLinear(driveR3, power/127.0);
+  SetMotorLinear(driveR1, power/127.0);
+  SetMotorLinear(driveR2, power/127.0);
+  SetMotorLinear(driveR3, power/127.0);
 }
 
 void setHangingLock(int value)
@@ -42,13 +42,13 @@ void setHangingLock(int value)
 
 void drivePower(int power)
 {
-	leftDrive(power);
-	rightDrive(power);
+  leftDrive(power);
+  rightDrive(power);
 }
 
 void liftPower(int power)
 {
-	motor[liftL1] = motor[liftR1] = power;
+  motor[liftL1] = motor[liftR1] = power;
 }
 
 int getLeftEncoder()
@@ -112,16 +112,16 @@ enum SonarLocation
 
 void toggleSonar(SonarLocation sonar)
 {
-	if(sonar == FRONT_ON)
-	{
-		SensorType[dgtl10] = sensorNone;
-		SensorType[dgtl6] = sensorSONAR_TwoPins_raw;
-	}
-	else if(sonar == BACK_ON)
-	{
-		SensorType[dgtl6] = sensorNone;
-		SensorType[dgtl10] = sensorSONAR_TwoPins_raw;
-	}
+  if(sonar == FRONT_ON)
+  {
+    SensorType[dgtl10] = sensorNone;
+    SensorType[dgtl6] = sensorSONAR_TwoPins_raw;
+  }
+  else if(sonar == BACK_ON)
+  {
+    SensorType[dgtl6] = sensorNone;
+    SensorType[dgtl10] = sensorSONAR_TwoPins_raw;
+  }
 }
 
 
@@ -144,11 +144,11 @@ enum BiquadFilterType
 };
 
 int BiquadFilterInit(
-    struct BiquadFilter* filter,
-    enum BiquadFilterType type,
-    float sampleFreq,
-    float cutoffFreq,
-    float defaultValue)
+struct BiquadFilter* filter,
+enum BiquadFilterType type,
+float sampleFreq,
+float cutoffFreq,
+float defaultValue)
 {
   if (filter == 0) return -1;
 
@@ -163,26 +163,26 @@ int BiquadFilterInit(
   // Calculates the coefficients for the transfer function.
   switch (type)
   {
-    case LOWPASS:
-      b0 = (1 - cosw0) / 2;
-      b1 = (1 - cosw0);
-      b2 = (1 - cosw0) / 2;
-      a0 = 1 + alpha;
-      a1 = -2 * cosw0;
-      a2 = 1 - alpha;
-      break;
+  case LOWPASS:
+    b0 = (1 - cosw0) / 2;
+    b1 = (1 - cosw0);
+    b2 = (1 - cosw0) / 2;
+    a0 = 1 + alpha;
+    a1 = -2 * cosw0;
+    a2 = 1 - alpha;
+    break;
 
-    case HIGHPASS:
-      b0 = (1 + cosw0) / 2;
-      b1 = -(1 + cosw0);
-      b2 = (1 + cosw0) / 2;
-      a0 = 1 + alpha;
-      a1 = -2 * cosw0;
-      a2 = 1 - alpha;
-      break;
+  case HIGHPASS:
+    b0 = (1 + cosw0) / 2;
+    b1 = -(1 + cosw0);
+    b2 = (1 + cosw0) / 2;
+    a0 = 1 + alpha;
+    a1 = -2 * cosw0;
+    a2 = 1 - alpha;
+    break;
 
-    default:
-      return -1;
+  default:
+    return -1;
   }
 
   // Normalize the coefficients so that a0 = 1.
@@ -203,11 +203,11 @@ float BiquadFilterSample(struct BiquadFilter* filter, float data)
   if (filter == 0) return -1;
 
   float output =
-    filter->b0 * data +
-    filter->b1 * filter->old_input[0] +
-    filter->b2 * filter->old_input[1] -
-    filter->a1 * filter->old_output[0] -
-    filter->a2 * filter->old_output[1];
+  filter->b0 * data +
+  filter->b1 * filter->old_input[0] +
+  filter->b2 * filter->old_input[1] -
+  filter->a1 * filter->old_output[0] -
+  filter->a2 * filter->old_output[1];
 
   filter->old_input[1] = filter->old_input[0];
   filter->old_input[0] = data;
@@ -249,15 +249,15 @@ float GyroGetRate()
 /*
 struct GyroSensor
 {
-  // Calibration value
-  int calibValue;
+// Calibration value
+int calibValue;
 
-  // Sensor number for SensorValue[..]
-  int sensorNum;
+// Sensor number for SensorValue[..]
+int sensorNum;
 
-  // Current angle in degrees.
-  float angle;
-  float rate;
+// Current angle in degrees.
+float angle;
+float rate;
 }
 
 // Singleton assuming a single gyro sensor
@@ -265,165 +265,165 @@ struct GyroSensor gyroSen;
 
 void GyroInit(int sensorNum)
 {
-  gyroSen.sensorNum = sensorNum;
-  gyroSen.angle = 0;
+gyroSen.sensorNum = sensorNum;
+gyroSen.angle = 0;
 }
 
 void GyroCalibration()
 {
-  int i;
-  long sum = 0;
-  for (i = 0; i < 50; i++)
-  {
-    sum += SensorValue[gyroSen.sensorNum];
-    delay(5);
-  }
+int i;
+long sum = 0;
+for (i = 0; i < 50; i++)
+{
+sum += SensorValue[gyroSen.sensorNum];
+delay(5);
+}
 
-  gyroSen.calibValue = (int)(sum / 50.0);
+gyroSen.calibValue = (int)(sum / 50.0);
 }
 
 float GyroDegPerSec()
 {
-  float rawAnalog = SensorValue[gyroSen.sensorNum] - gyroSen.calibValue;
+float rawAnalog = SensorValue[gyroSen.sensorNum] - gyroSen.calibValue;
 
-  // Cortex's analog signal is 0 -> 3.3V, data is in 0 -> 4095
-  float rawVoltage = rawAnalog * 3.3 / 4095.0;
+// Cortex's analog signal is 0 -> 3.3V, data is in 0 -> 4095
+float rawVoltage = rawAnalog * 3.3 / 4095.0;
 
-  // Degrees per second.  1.1mV/dps according to datasheet.
-  float dps = rawVoltage / 0.0011;
+// Degrees per second.  1.1mV/dps according to datasheet.
+float dps = rawVoltage / 0.0011;
 
-  return dps;
+return dps;
 }
 
 float GyroUpdate(float dT)
 {
-  float rate = GyroDegPerSec();
+float rate = GyroDegPerSec();
 
-  if (abs(rate) > 2)
-  {
-    gyroSen.rate = rate;
-    gyroSen.angle += gyroSen.rate * dT;
-  }
-  else
-  {
-    gyroSen.rate = 0;
-  }
+if (abs(rate) > 2)
+{
+gyroSen.rate = rate;
+gyroSen.angle += gyroSen.rate * dT;
+}
+else
+{
+gyroSen.rate = 0;
+}
 
-  return gyroSen.angle;
+return gyroSen.angle;
 }
 
 float GyroUpdateFiltered(struct BiquadFilter* filter, float dT)
 {
-  float rate = BiquadFilterSample(filter, GyroDegPerSec());
+float rate = BiquadFilterSample(filter, GyroDegPerSec());
 
-  if (abs(rate) > 2)
-  {
-    gyroSen.rate = rate;
-    gyroSen.angle += gyroSen.rate * dT;
-  }
-  else
-  {
-    gyroSen.rate = 0;
-  }
+if (abs(rate) > 2)
+{
+gyroSen.rate = rate;
+gyroSen.angle += gyroSen.rate * dT;
+}
+else
+{
+gyroSen.rate = 0;
+}
 
-  return gyroSen.angle;
+return gyroSen.angle;
 }
 
 void GyroResetAngle(float value)
 {
-  gyroSen.angle = value;
+gyroSen.angle = value;
 }
 
 float GyroGetRate()
 {
-  return gyroSen.rate;
+return gyroSen.rate;
 }
 
 float GyroGetAngle()
 {
-  return gyroSen.angle;
+return gyroSen.angle;
 }
 
 task GyroTask
 {
-  struct BiquadFilter gyroLP;
-  BiquadFilterInit(&gyroLP, LOWPASS, 333.33, 40, 0);
+struct BiquadFilter gyroLP;
+BiquadFilterInit(&gyroLP, LOWPASS, 333.33, 40, 0);
 
-  while (1==1)
-  {
-    GyroUpdateFiltered(&gyroLP, 0.003);
-    wait1Msec(3);
-  }
+while (1==1)
+{
+GyroUpdateFiltered(&gyroLP, 0.003);
+wait1Msec(3);
+}
 }*/
 
 struct PID
 {
-    // Proportional, Integral, Derivative constants.
-    float kP, kI, kD;
+  // Proportional, Integral, Derivative constants.
+  float kP, kI, kD;
 
-    //
-    float error, integral, derivative, previousError;
+  //
+  float error, integral, derivative, previousError;
 
-    // Max integral is how large the `integral` value can become. If left
-    // as 0, the integral will not be restricted.
-    float maxIntegral;
+  // Max integral is how large the `integral` value can become. If left
+  // as 0, the integral will not be restricted.
+  float maxIntegral;
 
-    // Max output is the maximum output value the controller can return.
-    // If left as 0, the output will be restricted.
-    float maxOutput;
+  // Max output is the maximum output value the controller can return.
+  // If left as 0, the output will be restricted.
+  float maxOutput;
 };
 
 // Initializes the controller to default values.
 int PIDInit(struct PID* pid, float kP, float kI, float kD)
 {
-    pid->kP = kP;
-    pid->kI = kI;
-    pid->kD = kD;
+  pid->kP = kP;
+  pid->kI = kI;
+  pid->kD = kD;
 
-    pid->previousError = 0;
-    pid->integral = 0;
-    pid->derivative = 0;
-    pid->error = 0;
+  pid->previousError = 0;
+  pid->integral = 0;
+  pid->derivative = 0;
+  pid->error = 0;
 
-    // If max = 0, do no limit to any value.
-    pid->maxIntegral = 0;
-    pid->maxOutput = 0;
+  // If max = 0, do no limit to any value.
+  pid->maxIntegral = 0;
+  pid->maxOutput = 0;
 
-    return 0;
+  return 0;
 }
 
 // Calcultes the feedback value for the PID controller.
 float PIDUpdate(struct PID* pid, float error, float dT)
 {
-    pid->error = error;
-    pid->integral += error * dT;
-    pid->derivative = (error - pid->previousError) / dT;
-    pid->previousError = error;
+  pid->error = error;
+  pid->integral += error * dT;
+  pid->derivative = (error - pid->previousError) / dT;
+  pid->previousError = error;
 
-    // Ensure the integral doesn't get too large.
-    if (pid->maxIntegral != 0)
-    {
-        if (pid->integral > pid->maxIntegral)
-            pid->integral = pid->maxIntegral;
+  // Ensure the integral doesn't get too large.
+  if (pid->maxIntegral != 0)
+  {
+    if (pid->integral > pid->maxIntegral)
+      pid->integral = pid->maxIntegral;
 
-        if (pid->integral < -pid->maxIntegral)
-            pid->integral = -pid->maxIntegral;
-    }
+    if (pid->integral < -pid->maxIntegral)
+      pid->integral = -pid->maxIntegral;
+  }
 
-    float returnValue = pid->error * pid->kP
-        + pid->integral * pid->kI
-        + pid->derivative * pid->kD;
+  float returnValue = pid->error * pid->kP
+  + pid->integral * pid->kI
+  + pid->derivative * pid->kD;
 
-    if (pid->maxOutput != 0)
-    {
-        if (returnValue > pid->maxOutput)
-            returnValue = pid->maxOutput;
+  if (pid->maxOutput != 0)
+  {
+    if (returnValue > pid->maxOutput)
+      returnValue = pid->maxOutput;
 
-        if (returnValue < -pid->maxOutput)
-            returnValue = -pid->maxOutput;
-    }
+    if (returnValue < -pid->maxOutput)
+      returnValue = -pid->maxOutput;
+  }
 
-    return returnValue;
+  return returnValue;
 }
 
 // Ensure the duty cycle is linear from 0 -> 127 for all motors
@@ -475,17 +475,17 @@ task liftHeight()
 
 float limitTo180(float degrees)
 {
-	while (degrees < -180)
-	{
-		degrees += 2*180;
-	}
+  while (degrees < -180)
+  {
+    degrees += 2*180;
+  }
 
-	while (degrees > 180)
-	{
-		degrees -= 2*180;
-	}
+  while (degrees > 180)
+  {
+    degrees -= 2*180;
+  }
 
-	return degrees;
+  return degrees;
 }
 
 #include "pixy.c"
@@ -509,9 +509,9 @@ task PixyPackets
     //pixyPrint(&robotPixy);
 
     /*if (largestBlock != 0)
-      pixyPrintBlock(largestBlock);
+    pixyPrintBlock(largestBlock);
     else
-      writeDebugStreamLine("---");*/
+    writeDebugStreamLine("---");*/
 
     delay(50);
   }

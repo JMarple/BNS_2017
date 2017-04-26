@@ -30,15 +30,15 @@ int autoQuit = 0;
 
 void forceQuitAuton()
 {
-	writeDebugStreamLine("Force AutoQuit");
-	autoQuit = 1;
-	stopTask(liftHeight);
-	stopTask(PSC_Driver);
+  writeDebugStreamLine("Force AutoQuit");
+  autoQuit = 1;
+  stopTask(liftHeight);
+  stopTask(PSC_Driver);
 }
 
 int shouldKeepRunning()
 {
-	return (time1[TIMEOUT_TIMER] < TIMEOUT_TIME && !autoQuit);
+  return (time1[TIMEOUT_TIMER] < TIMEOUT_TIME && !autoQuit);
 }
 
 void brake(int dir)
@@ -84,7 +84,7 @@ void waitForLiftDown(int value)
 }
 
 void driveCorrectedSmoothTurn(
-	float targetAngle, int medianSpeed, int maxPIDOutput = 70)
+float targetAngle, int medianSpeed, int maxPIDOutput = 70)
 {
   struct PID posPID;
 
@@ -96,7 +96,7 @@ void driveCorrectedSmoothTurn(
   {
     // Break if close enough to target angle
     float posError =
-      limitTo180(targetAngle - GyroGetAngle());
+    limitTo180(targetAngle - GyroGetAngle());
 
     float speed = PIDUpdate(&posPID, posError, 0.01);
 
@@ -157,7 +157,7 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
   {
     // Break if close enough to target angle
     float posError =
-      limitTo180(targetAngle - GyroGetAngle());
+    limitTo180(targetAngle - GyroGetAngle());
 
     float speed = PIDUpdate(&posPID, posError, 0.01);
 
@@ -180,9 +180,9 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
 }
 
 int driveSmoothTurn(
-	float speed,
-	float targetAngularVelocity,
-	float targetAngle)
+float speed,
+float targetAngularVelocity,
+float targetAngle)
 {
   struct PID velPID;
   PIDInit(&velPID, 0.02, 0, 0);
@@ -194,7 +194,7 @@ int driveSmoothTurn(
   {
     // Break if close enough to target angle
     float posError =
-      limitTo180(targetAngle - GyroGetAngle());
+    limitTo180(targetAngle - GyroGetAngle());
 
     if (abs(posError) <= 5) break;
 
@@ -244,14 +244,14 @@ task delayedDeploy()
 }
 
 int driveHoldHeading(
-	int distance,
-	int maxSpeed,
-	float targetAngle,
-	int type = TYPE_FORWARD,
-	int accel_type = ACCEL_NONE,
-	int accel_startspeed = 0,
-	float kP = 2,
-	int offset = 0)
+int distance,
+int maxSpeed,
+float targetAngle,
+int type = TYPE_FORWARD,
+int accel_type = ACCEL_NONE,
+int accel_startspeed = 0,
+float kP = 2,
+int offset = 0)
 {
   if (distance < 0) distance = -distance;
 
@@ -365,7 +365,7 @@ int driveHoldHeading(
 
     if (type == DRIVE_PIXY_CLAW)
     {
-    	if (largestBlockY > 120) break;
+      if (largestBlockY > 120) break;
     }
 
     delay(10);

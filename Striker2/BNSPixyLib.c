@@ -3,11 +3,11 @@
 
 typedef struct
 {
-	int sig;
-	int x;
-	int y;
-	int width;
-	int height;
+  int sig;
+  int x;
+  int y;
+  int width;
+  int height;
 } PixyBlock;
 
 PixyBlock pixyBlocks[10];
@@ -16,94 +16,94 @@ bool pixyBlockHasUpdated;
 
 char getNextChar()
 {
-	while (1)
-	{
-		short c = getChar(UART1);
+  while (1)
+  {
+    short c = getChar(UART1);
 
-		if (c != -1)
-			return (char)c;
-	}
+    if (c != -1)
+      return (char)c;
+  }
 }
 
 int getNextInt()
 {
-	char n1 = getNextChar();
-	char n2 = getNextChar();
-	return n1 | (n2 << 8);
+  char n1 = getNextChar();
+  char n2 = getNextChar();
+  return n1 | (n2 << 8);
 }
 
 task pixyUpdate()
 {
-	int skip = false;
-	int count = 0;
-	int zeroCount = 0;
-	while (1)
-	{
-		pixyBlockNum = count;
-		pixyBlockHasUpdated = true;
-		count = 0;
-		char c = 0xFF;
+  int skip = false;
+  int count = 0;
+  int zeroCount = 0;
+  while (1)
+  {
+    pixyBlockNum = count;
+    pixyBlockHasUpdated = true;
+    count = 0;
+    char c = 0xFF;
 
-		while(skip == false)
-		{
-			if (c == 0) zeroCount++;
+    while(skip == false)
+    {
+      if (c == 0) zeroCount++;
 
-			if (zeroCount > 10)
-			{
-				zeroCount = 0;
-				pixyBlockNum = 0;
-				pixyBlockHasUpdated = true;
-			}
-			// Look for 0xAA55 tag
-			c = getNextChar();
-			if (c != 0x55) continue;
+      if (zeroCount > 10)
+      {
+        zeroCount = 0;
+        pixyBlockNum = 0;
+        pixyBlockHasUpdated = true;
+      }
+      // Look for 0xAA55 tag
+      c = getNextChar();
+      if (c != 0x55) continue;
 
-			c = getNextChar();
-			if (c != 0xaa) continue;
+      c = getNextChar();
+      if (c != 0xaa) continue;
 
-			c = getNextChar();
-			if (c != 0x55) continue;
+      c = getNextChar();
+      if (c != 0x55) continue;
 
-			c = getNextChar();
-			if (c != 0xaa) continue;
+      c = getNextChar();
+      if (c != 0xaa) continue;
 
-			break;
-		}
+      break;
+    }
 
-		skip = false;
+    skip = false;
 
-		while(1)
-		{
-			// We don't care about checksum for now
-			char cs1 = getNextChar();
-			char cs2 = getNextChar();
+    while(1)
+    {
+      // We don't care about checksum for now
+      char cs1 = getNextChar();
+      char cs2 = getNextChar();
 
-			if (cs1 == 85 && cs2 == 170)
-			{
-				skip = true;
-				break;
-			}
+      if (cs1 == 85 && cs2 == 170)
+      {
+        skip = true;
+        break;
+      }
 
-			// Data
-			int sig = getNextInt();
-		  int x = getNextInt();
-		  int y = getNextInt();
-		  int width = getNextInt();
-		  int height = getNextInt();
+      // Data
+      int sig = getNextInt();
+      int x = getNextInt();
+      int y = getNextInt();
+      int width = getNextInt();
+      int height = getNextInt();
 
-		  if (count >= 10) break;
+      if (count >= 10) break;
 
-		  pixyBlocks[count].sig = sig;
-		  pixyBlocks[count].x = x;
-		  pixyBlocks[count].y = y;
-		  pixyBlocks[count].width = width;
-		  pixyBlocks[count].height = height;
+      pixyBlocks[count].sig = sig;
+      pixyBlocks[count].x = x;
+      pixyBlocks[count].y = y;
+      pixyBlocks[count].width = width;
+      pixyBlocks[count].height = height;
 
-		  count++;
+      count++;
 
-		  int c1 = getNextChar();
-		  int c2 = getNextChar();
-		  if (c1 != 0x55 || c2 != 0xAA) break;
-		}
+      int c1 = getNextChar();
+      int c2 = getNextChar();
+      if (c1 != 0x55 || c2 != 0xAA) break;
+    }
   }
 }

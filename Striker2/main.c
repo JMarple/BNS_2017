@@ -40,14 +40,14 @@ void pre_auton()
 {
   startTask(xsens);
   GyroCalibration();
-	setClaw(0);
-	setHangingLock(0);
-	startTask(PixyPackets);
+  setClaw(0);
+  setHangingLock(0);
+  startTask(PixyPackets);
 }
 
 void clawFlip()
 {
-	SetLiftHeight(LIFT_LOW_HEIGHT);
+  SetLiftHeight(LIFT_LOW_HEIGHT);
   setClaw(1);
   wait1Msec(100);
   setClaw(0);
@@ -61,261 +61,261 @@ float PSC_HangingPushingOne(float currentHeading);
 
 void PSC()
 {
-    startTask(liftHeight);
-    int turnAngVel = 120;
-	  int turnStartSpeed = 80;
-	  int currentHeading = 0;
-	  int overshootConstant = 30;
-	  GyroResetAngle(0);
-    setPusher(0);
-    setHangingLock(0);
-    //toggleSonar(BACK_ON);
+  startTask(liftHeight);
+  int turnAngVel = 120;
+  int turnStartSpeed = 80;
+  int currentHeading = 0;
+  int overshootConstant = 30;
+  GyroResetAngle(0);
+  setPusher(0);
+  setHangingLock(0);
+  //toggleSonar(BACK_ON);
 
-	  clawFlip();
+  clawFlip();
 
-	  driveHoldHeading(75, 80, currentHeading);
-	  setClaw(1);
-	  drivePower(0);
-	  wait1Msec(500);
+  driveHoldHeading(75, 80, currentHeading);
+  setClaw(1);
+  drivePower(0);
+  wait1Msec(500);
 
-	  // Turn towards corner star #2 near fence
-	  currentHeading += ROTATE_RIGHT - ROTATE_RIGHT*0.05;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_WITH_DRAGGING_STARS, 10);
-	  //turnRight(turnStartSpeed, turnAngVel, currentHeading + 10);
-	  setClaw(0);
-	  driveHoldHeading(650, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
-	  setClaw(1);
+  // Turn towards corner star #2 near fence
+  currentHeading += ROTATE_RIGHT - ROTATE_RIGHT*0.05;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_WITH_DRAGGING_STARS, 10);
+  //turnRight(turnStartSpeed, turnAngVel, currentHeading + 10);
+  setClaw(0);
+  driveHoldHeading(650, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
+  setClaw(1);
 
-	  //currentHeading += ROTATE_LEFT * 2.0/13.0;
-	  //turnLeft(turnStartSpeed, turnAngVel, currentHeading - overshootConstant/7, TYPE_BACKWARD);
+  //currentHeading += ROTATE_LEFT * 2.0/13.0;
+  //turnLeft(turnStartSpeed, turnAngVel, currentHeading - overshootConstant/7, TYPE_BACKWARD);
 
-	  // Go back to tile to get matchloads
-	  currentHeading -= ROTATE_RIGHT*0.02;
-	  driveHoldHeading(-50, -127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
-	  SetLiftHeight(LIFT_HIGH_HEIGHT);
-	  driveHoldHeading(-300, -127, currentHeading);
-	  driveHoldHeading(2000, -70, currentHeading, DRIVE_BACK_SONAR);
+  // Go back to tile to get matchloads
+  currentHeading -= ROTATE_RIGHT*0.02;
+  driveHoldHeading(-50, -127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  driveHoldHeading(-300, -127, currentHeading);
+  driveHoldHeading(2000, -70, currentHeading, DRIVE_BACK_SONAR);
 
-	  // LOADING #1
-	  brake(-1);
-	  wait1Msec(750);
-	  //currentHeading += ROTATE_RIGHT / 7;
-	  //turnRight(turnStartSpeed, turnAngVel, currentHeading + overshootConstant/7);
-	  //drivePower(0);
+  // LOADING #1
+  brake(-1);
+  wait1Msec(750);
+  //currentHeading += ROTATE_RIGHT / 7;
+  //turnRight(turnStartSpeed, turnAngVel, currentHeading + overshootConstant/7);
+  //drivePower(0);
 
-	  //currentHeading += ROTATE_RIGHT * 0.08;
+  //currentHeading += ROTATE_RIGHT * 0.08;
 
-	  // Score #1
-	  //currentHeading += ROTATE_RIGHT * 0.05;
-	  //currentHeading += ROTATE_RIGHT * 0.05;
-	  currentHeading += ROTATE_RIGHT*0.04;
-	  driveHoldHeading(750, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 40, 4);
-	  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES);
-	  setClaw(0);
-	  drivePower(127);
-	  wait1Msec(100);
-	  drivePower(80);
-	  wait1Msec(250);
+  // Score #1
+  //currentHeading += ROTATE_RIGHT * 0.05;
+  //currentHeading += ROTATE_RIGHT * 0.05;
+  currentHeading += ROTATE_RIGHT*0.04;
+  driveHoldHeading(750, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 40, 4);
+  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES);
+  setClaw(0);
+  drivePower(127);
+  wait1Msec(100);
+  drivePower(80);
+  wait1Msec(250);
 
-	  currentHeading += ROTATE_RIGHT * 0.03;
-	  //currentHeading += ROTATE_RIGHT / 14;
+  currentHeading += ROTATE_RIGHT * 0.03;
+  //currentHeading += ROTATE_RIGHT / 14;
 
-	  // Backup from fence
-	  driveHoldHeading(-300, -90, currentHeading);
-	  SetLiftHeight(LIFT_LOW_HEIGHT);
-	  driveHoldHeading(5500, -90, currentHeading, DRIVE_BACK_SONAR);
-	  brake(-1);
+  // Backup from fence
+  driveHoldHeading(-300, -90, currentHeading);
+  SetLiftHeight(LIFT_LOW_HEIGHT);
+  driveHoldHeading(5500, -90, currentHeading, DRIVE_BACK_SONAR);
+  brake(-1);
 
-	  // Turn towards cube
-	  currentHeading += ROTATE_RIGHT;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 10);
-	  driveHoldHeading(400, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 40);
-	  driveHoldHeading(8000, 127, currentHeading, DRIVE_BACK_SONAR_FORWARD);
+  // Turn towards cube
+  currentHeading += ROTATE_RIGHT;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 10);
+  driveHoldHeading(400, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 40);
+  driveHoldHeading(8000, 127, currentHeading, DRIVE_BACK_SONAR_FORWARD);
 
-	  // Grab Cube
-	  setClaw(1);
-	  SetLiftHeight(LIFT_MID_HEIGHT);
-	  currentHeading += ROTATE_LEFT / 2.5;
-	  driveHoldHeading(-450, -127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
-    brake(-0.5);
-    currentHeading += ROTATE_LEFT * 1.5/2.5;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_WITH_CUBE);
+  // Grab Cube
+  setClaw(1);
+  SetLiftHeight(LIFT_MID_HEIGHT);
+  currentHeading += ROTATE_LEFT / 2.5;
+  driveHoldHeading(-450, -127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
+  brake(-0.5);
+  currentHeading += ROTATE_LEFT * 1.5/2.5;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_WITH_CUBE);
 
-	  // LOADING #2
-	  drivePower(0);
-	  wait1Msec(500);
+  // LOADING #2
+  drivePower(0);
+  wait1Msec(500);
 
-	  // Score #2 cubes.
-	  SetLiftHeight(LIFT_HIGH_HEIGHT);
-	  driveHoldHeading(600, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
-	  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES);
-	  setClaw(0);
-	  drivePower(127);
-	  wait1Msec(100);
-	  //drivePower(50);
-	  //wait1Msec(250);
+  // Score #2 cubes.
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  driveHoldHeading(600, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
+  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES);
+  setClaw(0);
+  drivePower(127);
+  wait1Msec(100);
+  //drivePower(50);
+  //wait1Msec(250);
 
-	  // Backup from fence
-	  driveHoldHeading(-200, -100, currentHeading);
-	  SetLiftHeight(LIFT_LOW_HEIGHT);
-	  driveHoldHeading(5000, -90, currentHeading, DRIVE_BACK_SONAR);
+  // Backup from fence
+  driveHoldHeading(-200, -100, currentHeading);
+  SetLiftHeight(LIFT_LOW_HEIGHT);
+  driveHoldHeading(5000, -90, currentHeading, DRIVE_BACK_SONAR);
 
-	  // Turn to get "3+1" stars in the front row.
-	  currentHeading += ROTATE_RIGHT * 3.0 / 6.0;
-	  turnRight(turnStartSpeed, turnAngVel, currentHeading + overshootConstant);
-	  driveHoldHeading(450, 90, currentHeading);
-	  currentHeading += ROTATE_RIGHT * 3.0 / 6.0;
-	  turnRight(turnStartSpeed, turnAngVel, currentHeading + overshootConstant/2);
+  // Turn to get "3+1" stars in the front row.
+  currentHeading += ROTATE_RIGHT * 3.0 / 6.0;
+  turnRight(turnStartSpeed, turnAngVel, currentHeading + overshootConstant);
+  driveHoldHeading(450, 90, currentHeading);
+  currentHeading += ROTATE_RIGHT * 3.0 / 6.0;
+  turnRight(turnStartSpeed, turnAngVel, currentHeading + overshootConstant/2);
 
-	  // Get the 4 stars
-	  driveHoldHeading(8500, 127, currentHeading, DRIVE_BACK_SONAR_FORWARD, ACCEL_FAST, 70, 5);
-	  driveHoldHeading(1000, 127, currentHeading, DRIVE_ENCODERS, ACCEL_NONE, 127, 5, -10);
-    setClaw(1);
-    drivePower(127);
-    wait1Msec(200);
+  // Get the 4 stars
+  driveHoldHeading(8500, 127, currentHeading, DRIVE_BACK_SONAR_FORWARD, ACCEL_FAST, 70, 5);
+  driveHoldHeading(1000, 127, currentHeading, DRIVE_ENCODERS, ACCEL_NONE, 127, 5, -10);
+  setClaw(1);
+  drivePower(127);
+  wait1Msec(200);
 
-    driveHoldHeading(-20, -127, currentHeading);
+  driveHoldHeading(-20, -127, currentHeading);
 
-    currentHeading += ROTATE_LEFT * 0.8;
-    turnLeft(turnStartSpeed, turnAngVel, currentHeading, TYPE_BACKWARD);
+  currentHeading += ROTATE_LEFT * 0.8;
+  turnLeft(turnStartSpeed, turnAngVel, currentHeading, TYPE_BACKWARD);
 
-    SetLiftHeight(LIFT_HIGH_HEIGHT);
-    driveHoldHeading(-150, -100, currentHeading);
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  driveHoldHeading(-150, -100, currentHeading);
 
-    drivePower(0);
-    currentHeading += ROTATE_LEFT * 0.5;
-    driveTurnInPlace(currentHeading);
-    waitForLiftUp(LIFT_NEARLY_HIGH_HEIGHT);
+  drivePower(0);
+  currentHeading += ROTATE_LEFT * 0.5;
+  driveTurnInPlace(currentHeading);
+  waitForLiftUp(LIFT_NEARLY_HIGH_HEIGHT);
 
-    //currentHeading += ROTATE_RIGHT * 0.5;
-    //driveTurnInPlace(currentHeading);
+  //currentHeading += ROTATE_RIGHT * 0.5;
+  //driveTurnInPlace(currentHeading);
 
-    // Score #3
-    driveHoldHeading(200, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
-	  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES);
+  // Score #3
+  driveHoldHeading(200, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
+  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES);
 
-	  drivePower(127);
-	  //wait1Msec(50);
-	  setClaw(0);
-	  wait1Msec(500);
+  drivePower(127);
+  //wait1Msec(50);
+  setClaw(0);
+  wait1Msec(500);
 
-	  // Nudge 4th star if it happens to still be there
-	  //currentHeading += ROTATE_RIGHT;
-	  //driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 30);
-	  //currentHeading += ROTATE_LEFT;
-    driveHoldHeading(-75, -100, currentHeading);
-	  // --- Delete Later
-	  //SetLiftHeight(LIFT_HIGH_HEIGHT);
-	  //setClaw(0);
-	  //setHangingLock(0);
-	  // ---
+  // Nudge 4th star if it happens to still be there
+  //currentHeading += ROTATE_RIGHT;
+  //driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 30);
+  //currentHeading += ROTATE_LEFT;
+  driveHoldHeading(-75, -100, currentHeading);
+  // --- Delete Later
+  //SetLiftHeight(LIFT_HIGH_HEIGHT);
+  //setClaw(0);
+  //setHangingLock(0);
+  // ---
 
-	  driveHoldHeading(-300, -90, currentHeading);
-    brake(-1);
+  driveHoldHeading(-300, -90, currentHeading);
+  brake(-1);
 
-    currentHeading += ROTATE_LEFT * 0.7;
-    driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
-    SetLiftHeight(LIFT_LOW_HEIGHT);
+  currentHeading += ROTATE_LEFT * 0.7;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
+  SetLiftHeight(LIFT_LOW_HEIGHT);
 
-	  // Correct on wall
-	  //currentHeading += ROTATE_LEFT;
-	  //driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
+  // Correct on wall
+  //currentHeading += ROTATE_LEFT;
+  //driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
 
-	  driveHoldHeading(2300, -90, currentHeading, DRIVE_BACK_SONAR);
+  driveHoldHeading(2300, -90, currentHeading, DRIVE_BACK_SONAR);
 
-	  // Turn towards star in corner
-	  currentHeading += ROTATE_LEFT;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
+  // Turn towards star in corner
+  currentHeading += ROTATE_LEFT;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
 
-	  driveHoldHeading(350, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
-	  setClaw(1);
-	  driveHoldHeading(-300, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
+  driveHoldHeading(350, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
+  setClaw(1);
+  driveHoldHeading(-300, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
 
-	  currentHeading += ROTATE_RIGHT * 0.35 ;
-    driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
+  currentHeading += ROTATE_RIGHT * 0.35 ;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
 
-	  // Pick up cube on red tile
-	  setClaw(0);
-	  driveHoldHeading(400, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
-	  drivePower(127);
-	  wait1Msec(200);
-    setClaw(1);
+  // Pick up cube on red tile
+  setClaw(0);
+  driveHoldHeading(400, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
+  drivePower(127);
+  wait1Msec(200);
+  setClaw(1);
 
-    SetLiftHeight(LIFT_HIGH_HEIGHT);
-    driveHoldHeading(-50, -100, currentHeading);
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  driveHoldHeading(-50, -100, currentHeading);
 
-	  // Turn towards fence and raise lift
-	  currentHeading += ROTATE_RIGHT * 0.65;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER, 10); // Pusher = star + cube? lol
+  // Turn towards fence and raise lift
+  currentHeading += ROTATE_RIGHT * 0.65;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER, 10); // Pusher = star + cube? lol
 
-	  driveHoldHeading(2300, -90, currentHeading, DRIVE_BACK_SONAR);
-	  currentHeading += ROTATE_RIGHT;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER, 10); // Pusher = star + cube? lol
+  driveHoldHeading(2300, -90, currentHeading, DRIVE_BACK_SONAR);
+  currentHeading += ROTATE_RIGHT;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER, 10); // Pusher = star + cube? lol
 
-	  // Score #4
-	  //driveHoldHeading(100, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
-	  driveHoldHeading(300, 127, currentHeading);
-	  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES, ACCEL_FAST, 70);
-	  setClaw(0);
-	  drivePower(127);
-	  wait1Msec(100);
-	  drivePower(50);
-	  wait1Msec(250);
+  // Score #4
+  //driveHoldHeading(100, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
+  driveHoldHeading(300, 127, currentHeading);
+  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES, ACCEL_FAST, 70);
+  setClaw(0);
+  drivePower(127);
+  wait1Msec(100);
+  drivePower(50);
+  wait1Msec(250);
 
-	  // Delete later
-	  //SetLiftHeight(LIFT_HIGH_HEIGHT);
-	  // ------------
+  // Delete later
+  //SetLiftHeight(LIFT_HIGH_HEIGHT);
+  // ------------
 
-	  driveHoldHeading(-300, -90, currentHeading);
-	  SetLiftHeight(LIFT_LOW_HEIGHT);
-	  driveHoldHeading(4700, -100, currentHeading, DRIVE_BACK_SONAR);
-	  //driveHoldHeading(-400, -70, currentHeading);
-	  brake(-1);
+  driveHoldHeading(-300, -90, currentHeading);
+  SetLiftHeight(LIFT_LOW_HEIGHT);
+  driveHoldHeading(4700, -100, currentHeading, DRIVE_BACK_SONAR);
+  //driveHoldHeading(-400, -70, currentHeading);
+  brake(-1);
 
-	  // Correct on wall
-	  currentHeading += ROTATE_LEFT;
-	  //driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
-	  //driveHoldHeading(2500, -65, currentHeading, DRIVE_BACK_SONAR);
+  // Correct on wall
+  currentHeading += ROTATE_LEFT;
+  //driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 20);
+  //driveHoldHeading(2500, -65, currentHeading, DRIVE_BACK_SONAR);
 
-	  // Pick up last 3 stars
-	  currentHeading += ROTATE_LEFT / 3;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_SMALL_NORMAL);
-	  driveHoldHeading(100, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
+  // Pick up last 3 stars
+  currentHeading += ROTATE_LEFT / 3;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_SMALL_NORMAL);
+  driveHoldHeading(100, 100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 70);
 
-	  // Don't do a turn here since hold heading will do a "smooth" turn automatically
-	  currentHeading += ROTATE_RIGHT / 3;
-	  driveHoldHeading(700, 127, currentHeading);
-	  driveHoldHeading(1000, 127, currentHeading, DRIVE_LINES);
-	  setClaw(1);
-	  SetLiftHeight(LIFT_HIGH_HEIGHT);
-	  driveHoldHeading(200, 127, currentHeading);
+  // Don't do a turn here since hold heading will do a "smooth" turn automatically
+  currentHeading += ROTATE_RIGHT / 3;
+  driveHoldHeading(700, 127, currentHeading);
+  driveHoldHeading(1000, 127, currentHeading, DRIVE_LINES);
+  setClaw(1);
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  driveHoldHeading(200, 127, currentHeading);
 
-	  currentHeading += ROTATE_RIGHT + ROTATE_RIGHT * 0.325;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_WITH_CUBE); // 3 stars = cube
+  currentHeading += ROTATE_RIGHT + ROTATE_RIGHT * 0.325;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_WITH_CUBE); // 3 stars = cube
 
-	  drivePower(0);
-	  waitForLiftUp(LIFT_NEARLY_HIGH_HEIGHT);
-	  // Score #5
-    driveHoldHeading(700, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 50, 4);
-	  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES, ACCEL_NONE, 127, 4);
-	  setClaw(0);
-	  drivePower(127);
-	  wait1Msec(100);
-	  drivePower(127);
-	  wait1Msec(250);
+  drivePower(0);
+  waitForLiftUp(LIFT_NEARLY_HIGH_HEIGHT);
+  // Score #5
+  driveHoldHeading(700, 127, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 50, 4);
+  driveHoldHeading(550, 127, currentHeading, DRIVE_LINES, ACCEL_NONE, 127, 4);
+  setClaw(0);
+  drivePower(127);
+  wait1Msec(100);
+  drivePower(127);
+  wait1Msec(250);
 
-	  // Nudge 3rd star if it happens to still be there
-	  currentHeading += ROTATE_LEFT;
-	  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 35);
-	  currentHeading += ROTATE_RIGHT;
+  // Nudge 3rd star if it happens to still be there
+  currentHeading += ROTATE_LEFT;
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_NORMAL, 35);
+  currentHeading += ROTATE_RIGHT;
 
-	  // Push & Hang
-	  currentHeading += ROTATE_LEFT * 0.325;
+  // Push & Hang
+  currentHeading += ROTATE_LEFT * 0.325;
 
-    //currentHeading = PushTwo(currentHeading);
-	  currentHeading = PushOne(currentHeading);
-	  //currentHeading = PSC_HangingPushing(currentHeading);
-	  currentHeading = PSC_HangingPushingOne(currentHeading);
+  //currentHeading = PushTwo(currentHeading);
+  currentHeading = PushOne(currentHeading);
+  //currentHeading = PSC_HangingPushing(currentHeading);
+  currentHeading = PSC_HangingPushingOne(currentHeading);
 }
 
 #define HALF_FAR_MODE 0
@@ -361,7 +361,7 @@ void AutonCubeFar(int type = 0)
   wait1Msec(100);
   drivePower(50);
   wait1Msec(250);
-	drivePower(0);
+  drivePower(0);
 
   drivePower(0);
 }
@@ -410,7 +410,7 @@ void AutonCubeNear(int type = 0)
   wait1Msec(100);
   drivePower(50);
   wait1Msec(250);
-	drivePower(0);
+  drivePower(0);
 
 
   drivePower(0);
@@ -442,15 +442,15 @@ float AutonCubeMid()
   wait1Msec(100);
   drivePower(50);
   wait1Msec(250);
-	drivePower(0);
+  drivePower(0);
 
-	currentHeading += ROTATE_RIGHT / 1.7;
-	driveHoldHeading(-300, -65, currentHeading);
-	SetLiftHeight(LIFT_LOW_HEIGHT);
-	driveHoldHeading(-1000, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
+  currentHeading += ROTATE_RIGHT / 1.7;
+  driveHoldHeading(-300, -65, currentHeading);
+  SetLiftHeight(LIFT_LOW_HEIGHT);
+  driveHoldHeading(-1000, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
 
-	currentHeading += ROTATE_RIGHT * (0.9/1.7);
-	driveTurnInPlace(currentHeading);
+  currentHeading += ROTATE_RIGHT * (0.9/1.7);
+  driveTurnInPlace(currentHeading);
   driveHoldHeading(2000, 110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 60);
   setClaw(1);
   drivePower(0);
@@ -468,9 +468,9 @@ float AutonCubeMid()
   wait1Msec(100);
   drivePower(50);
   wait1Msec(250);
-	drivePower(0);
+  drivePower(0);
 
-	return currentHeading;
+  return currentHeading;
 }
 
 
@@ -547,29 +547,29 @@ float PushOne(float currentHeading)
 {
   SetLiftHeight(LIFT_HIGH_HEIGHT);
   driveHoldHeading(-300, -110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
-	driveHoldHeading(4000, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -100);
+  driveHoldHeading(4000, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -100);
 
-	currentHeading += ROTATE_RIGHT;
+  currentHeading += ROTATE_RIGHT;
 
-	driveTurnInPlace(currentHeading);
-	driveHoldHeading(-300, -110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
-	driveHoldHeading(5500, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -80);
-	driveHoldHeading(-200, -110, currentHeading, DRIVE_ENCODERS, ACCEL_SLOW, -80);
-	brake(-1);
+  driveTurnInPlace(currentHeading);
+  driveHoldHeading(-300, -110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
+  driveHoldHeading(5500, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -80);
+  driveHoldHeading(-200, -110, currentHeading, DRIVE_ENCODERS, ACCEL_SLOW, -80);
+  brake(-1);
 
-	currentHeading += ROTATE_RIGHT;
-	deployTimer = 250;
-	startTask(delayedDeploy);
+  currentHeading += ROTATE_RIGHT;
+  deployTimer = 250;
+  startTask(delayedDeploy);
 
-	driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER_FALLING);
-	drivePower(0);
-	wait1Msec(400);
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER_FALLING);
+  drivePower(0);
+  wait1Msec(400);
 
-	driveHoldHeading(-500, -127, currentHeading, DRIVE_RIGHT_LINES, ACCEL_FAST, -70);
-	drivePower(-127);
-	wait1Msec(500); // Push
+  driveHoldHeading(-500, -127, currentHeading, DRIVE_RIGHT_LINES, ACCEL_FAST, -70);
+  drivePower(-127);
+  wait1Msec(500); // Push
 
-	return currentHeading;
+  return currentHeading;
 }
 
 float PSC_HangingPushingOne(float currentHeading)
@@ -614,58 +614,58 @@ float PushTwo(float currentHeading)
 {
   SetLiftHeight(LIFT_HIGH_HEIGHT);
   driveHoldHeading(-300, -110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -70);
-	driveHoldHeading(4000, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -100);
+  driveHoldHeading(4000, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -100);
 
-	currentHeading += ROTATE_RIGHT;
+  currentHeading += ROTATE_RIGHT;
 
-	driveTurnInPlace(currentHeading);
-	driveHoldHeading(-300, -110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
-	driveHoldHeading(5500, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -80);
-	driveHoldHeading(-200, -110, currentHeading, DRIVE_ENCODERS, ACCEL_SLOW, -80);
-	brake(-1);
+  driveTurnInPlace(currentHeading);
+  driveHoldHeading(-300, -110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
+  driveHoldHeading(5500, -110, currentHeading, DRIVE_BACK_SONAR, ACCEL_FAST, -80);
+  driveHoldHeading(-200, -110, currentHeading, DRIVE_ENCODERS, ACCEL_SLOW, -80);
+  brake(-1);
 
-	currentHeading += ROTATE_RIGHT;
-	deployTimer = 250;
-	startTask(delayedDeploy);
+  currentHeading += ROTATE_RIGHT;
+  deployTimer = 250;
+  startTask(delayedDeploy);
 
-	driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER_FALLING);
-	drivePower(0);
-	wait1Msec(400);
+  driveTurnInPlace(currentHeading, PID_INPLACE_TURN_PUSHER_FALLING);
+  drivePower(0);
+  wait1Msec(400);
 
-	driveHoldHeading(-500, -127, currentHeading, DRIVE_RIGHT_LINES, ACCEL_FAST, -70);
-	drivePower(-127);
-	wait1Msec(500); // Push
-	currentHeading += ROTATE_LEFT * 0.5;
-	driveHoldHeading(50, 70, currentHeading);
-	driveHoldHeading(850, 127, currentHeading);
+  driveHoldHeading(-500, -127, currentHeading, DRIVE_RIGHT_LINES, ACCEL_FAST, -70);
+  drivePower(-127);
+  wait1Msec(500); // Push
+  currentHeading += ROTATE_LEFT * 0.5;
+  driveHoldHeading(50, 70, currentHeading);
+  driveHoldHeading(850, 127, currentHeading);
 
-	currentHeading += ROTATE_RIGHT * 1;
-	driveTurnInPlace(currentHeading);
+  currentHeading += ROTATE_RIGHT * 1;
+  driveTurnInPlace(currentHeading);
 
-	driveHoldHeading(-50, -127, currentHeading);
-	currentHeading += ROTATE_LEFT * 0.5;
+  driveHoldHeading(-50, -127, currentHeading);
+  currentHeading += ROTATE_LEFT * 0.5;
   driveHoldHeading(-500, -127, currentHeading);
   drivePower(-127);
-	wait1Msec(750); // Push #2
+  wait1Msec(750); // Push #2
 
-	return currentHeading;
+  return currentHeading;
 }
 
 void AURACounter(int dir)
 {
   startTask(liftHeight);
-	int turnAngVel = 120;
-	int turnStartSpeed = 80;
-	int currentHeading = 0;
-	int overshootConstant = 30;
-	GyroResetAngle(0);
-	setPusher(0);
-	setHangingLock(0);
+  int turnAngVel = 120;
+  int turnStartSpeed = 80;
+  int currentHeading = 0;
+  int overshootConstant = 30;
+  GyroResetAngle(0);
+  setPusher(0);
+  setHangingLock(0);
 
-	// Flip Out
-	SetLiftHeight(LIFT_HIGH_HEIGHT);
-	setClaw(1);
-	wait1Msec(100);
+  // Flip Out
+  SetLiftHeight(LIFT_HIGH_HEIGHT);
+  setClaw(1);
+  wait1Msec(100);
   driveHoldHeading(100, 127, currentHeading);
   driveHoldHeading(550, 127, currentHeading, DRIVE_LINES);
 
@@ -706,12 +706,12 @@ void AURACounter(int dir)
   setClaw(0);
 
   currentHeading += ROTATE_LEFT*dir / 1.7;
-	driveHoldHeading(-300, -65, currentHeading);
-	SetLiftHeight(LIFT_LOW_HEIGHT + 150);
-	driveHoldHeading(-1000, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
+  driveHoldHeading(-300, -65, currentHeading);
+  SetLiftHeight(LIFT_LOW_HEIGHT + 150);
+  driveHoldHeading(-1000, -100, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, -60);
 
-	currentHeading += ROTATE_LEFT*dir * (0.9/1.7);
-	driveTurnInPlace(currentHeading);
+  currentHeading += ROTATE_LEFT*dir * (0.9/1.7);
+  driveTurnInPlace(currentHeading);
   driveHoldHeading(2000, 110, currentHeading, DRIVE_ENCODERS, ACCEL_FAST, 60);
   setClaw(1);
   drivePower(0);
@@ -731,7 +731,7 @@ void AURACounter(int dir)
   wait1Msec(100);
   drivePower(50);
   wait1Msec(250);
-	drivePower(0);
+  drivePower(0);
 
   stopTask(liftHeight);
 }
@@ -753,16 +753,16 @@ task autonomous()
   {
     AutonCubeMid();
   }*/
-	/*autoQuit = 0;
-	float currentHeading = 0;
-	if(SensorValue(selector2) > 3000)
-	{
-  	PSC();
+  /*autoQuit = 0;
+  float currentHeading = 0;
+  if(SensorValue(selector2) > 3000)
+  {
+    PSC();
   }
   else
   {
-  	currentHeading = AutonCubeMid();
-  	PixyAuton(currentHeading);
+	  currentHeading = AutonCubeMid();
+	  PixyAuton(currentHeading);
   }*/
 }
 

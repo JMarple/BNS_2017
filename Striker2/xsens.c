@@ -127,41 +127,41 @@ void getMTMessage(struct MTMessage* msg, TUARTs uartPort)
 {
   while (1==1)
   {
-	  char checksum = 0;
+    char checksum = 0;
 
-	  // Wait for preamble
-	  while (getCharFromUART(uartPort) != 0xFA){;}
+    // Wait for preamble
+    while (getCharFromUART(uartPort) != 0xFA){;}
 
-	  // BID
-	  checksum += getCharFromUART(uartPort);
+    // BID
+    checksum += getCharFromUART(uartPort);
 
-	  // MID
-	  msg->mid = getCharFromUART(uartPort);
-	  checksum += msg->mid;
+    // MID
+    msg->mid = getCharFromUART(uartPort);
+    checksum += msg->mid;
 
-	  // Payload length
-	  msg->len = getCharFromUART(uartPort);
-	  checksum += msg->len;
+    // Payload length
+    msg->len = getCharFromUART(uartPort);
+    checksum += msg->len;
 
-	  // Payload
-	  for (int i = 0; i < msg->len; i++)
-	  {
-	    msg->data[i] = getCharFromUART(uartPort);
-	    checksum += msg->data[i];
-	  }
+    // Payload
+    for (int i = 0; i < msg->len; i++)
+    {
+      msg->data[i] = getCharFromUART(uartPort);
+      checksum += msg->data[i];
+    }
 
-	  // Checksum (ignoring for now)
-	  checksum += getCharFromUART(uartPort);
+    // Checksum (ignoring for now)
+    checksum += getCharFromUART(uartPort);
 
-	  if (checksum != 0)
-	  {
-	    writeDebugStreamLine("Bad Checksum!");
-	  }
-	  else
-	  {
-	    break;
-	  }
-	}
+    if (checksum != 0)
+    {
+      writeDebugStreamLine("Bad Checksum!");
+    }
+    else
+    {
+      break;
+    }
+  }
 }
 
 #define XDI_PACKETCOUNTER 0x1020
@@ -208,42 +208,42 @@ void parseMT2Data(struct MT2Data* out, char* data, int len)
 
 /*void PrintMTConfigurations(TUARTs uartPort)
 {
-  MTMessage msg, sendMsg;
+MTMessage msg, sendMsg;
 
-  // Ensure there are no random messages from previous sessions
-  // still in the tx buffer.
-  flushTX(uartPort);
+// Ensure there are no random messages from previous sessions
+// still in the tx buffer.
+flushTX(uartPort);
 
-  // Go into config mode.
-  sendMsg.mid = 0x30;
-	sendMsg.len = 0x00;
-	sendMTMessage(&sendMsg, uartPort);
+// Go into config mode.
+sendMsg.mid = 0x30;
+sendMsg.len = 0x00;
+sendMTMessage(&sendMsg, uartPort);
 
-  wait1Msec(500);
+wait1Msec(500);
 
-  flushTX(uartPort);
+flushTX(uartPort);
 
-  // Get device serial number
-  sendMsg.mid = 0x00;
-  sendMsg.len = 0x00;
-  sendMTMessage(&sendMsg, uartPort);
+// Get device serial number
+sendMsg.mid = 0x00;
+sendMsg.len = 0x00;
+sendMTMessage(&sendMsg, uartPort);
 
-  writeDebugStreamLine("Getting MTi Device..");
+writeDebugStreamLine("Getting MTi Device..");
 
-  getMTMessage(&msg, uartPort);
-  writeDebugStream("Serial Number: ");
-  for (int i = 0; i < msg.len; i++) writeDebugStream("%x%x", (msg.data[i]>>4)&0xF, msg.data[i]&0xF);
-  writeDebugStreamLine("");
+getMTMessage(&msg, uartPort);
+writeDebugStream("Serial Number: ");
+for (int i = 0; i < msg.len; i++) writeDebugStream("%x%x", (msg.data[i]>>4)&0xF, msg.data[i]&0xF);
+writeDebugStreamLine("");
 
-  // Get product code
-  sendMsg.mid = 0x1C;
-  sendMsg.len = 0x00;
-  sendMTMessage(&sendMsg, uartPort);
+// Get product code
+sendMsg.mid = 0x1C;
+sendMsg.len = 0x00;
+sendMTMessage(&sendMsg, uartPort);
 
-  getMTMessage(&msg, uartPort);
-  writeDebugStream("Product Code: ");
-  for (int i = 0; i < msg.len; i++) writeDebugStream("%c", msg.data[i]);
-  writeDebugStreamLine("");
+getMTMessage(&msg, uartPort);
+writeDebugStream("Product Code: ");
+for (int i = 0; i < msg.len; i++) writeDebugStream("%c", msg.data[i]);
+writeDebugStreamLine("");
 }
 */
 float gyroCalibYaw = 0;
@@ -281,40 +281,40 @@ task xsens()
     MTMessage msg;
     getMTMessage(&msg, uartPort);
 
-	  // Message
-	  if (msg.mid == 0x36)
-	  {
-	    parseMT2Data(&mtData, msg.data, msg.len);
-	    //static float firstCompass = 1;
-	    //static float compassYawOffset = 0;
+    // Message
+    if (msg.mid == 0x36)
+    {
+      parseMT2Data(&mtData, msg.data, msg.len);
+      //static float firstCompass = 1;
+      //static float compassYawOffset = 0;
 
-	    //float compassYaw = 57.2958 * atan2(data.mag[0], data.mag[1]);
-	    //if (firstCompass)
-	    //{
-	      //firstCompass = 0;
-	      //compassYawOffset = compassYaw;
-	    //}
+      //float compassYaw = 57.2958 * atan2(data.mag[0], data.mag[1]);
+      //if (firstCompass)
+      //{
+      //firstCompass = 0;
+      //compassYawOffset = compassYaw;
+      //}
 
-	    mulQuaternions(&heading, &heading, &mtData.dQ);
+      mulQuaternions(&heading, &heading, &mtData.dQ);
 
-	    //static float complementaryYaw = 0;
-	    gyroYaw = getYaw(&heading) - gyroCalibYaw*packetCount;
+      //static float complementaryYaw = 0;
+      gyroYaw = getYaw(&heading) - gyroCalibYaw*packetCount;
 
-	    gyroYawRate = (gyroYaw - previousGyroYaw);
-	    previousGyroYaw = gyroYaw;
+      gyroYawRate = (gyroYaw - previousGyroYaw);
+      previousGyroYaw = gyroYaw;
 
-	    //float alpha = 0.98;
+      //float alpha = 0.98;
 
-	    //complementaryYaw = alpha * (complementaryYaw + dGyro) + (1-alpha) * (compassYaw - compassYawOffset);
-	    //static float velocity = 0;
-	    //velocity += data.dV[0] + 0.00156;
+      //complementaryYaw = alpha * (complementaryYaw + dGyro) + (1-alpha) * (compassYaw - compassYawOffset);
+      //static float velocity = 0;
+      //velocity += data.dV[0] + 0.00156;
 
-	    //writeDebugStreamLine("mag = %f %f %f", data.mag[0], data.mag[1], data.mag[2]);
-	    //writeDebugStreamLine("%f %f, %f %f", minX, maxX, minY, maxY);
-	    //writeDebugStreamLine("Q = %f %f %f %f", heading.data[0], heading.data[1], heading.data[2], heading.data[3]);
-	    //writeDebugStreamLine("Vel = %f, %f %f %f", velocity, data.dV[0], data.dV[1], data.dV[2]);
-	    //writeDebugStreamLine("Result = %d %d, %f %f %f", data.packetCounter, data.sampleTimeFine, gyroYaw, compassYaw - compassYawOffset, complementaryYaw);
-	    packetCount++;
-	  }
+      //writeDebugStreamLine("mag = %f %f %f", data.mag[0], data.mag[1], data.mag[2]);
+      //writeDebugStreamLine("%f %f, %f %f", minX, maxX, minY, maxY);
+      //writeDebugStreamLine("Q = %f %f %f %f", heading.data[0], heading.data[1], heading.data[2], heading.data[3]);
+      //writeDebugStreamLine("Vel = %f, %f %f %f", velocity, data.dV[0], data.dV[1], data.dV[2]);
+      //writeDebugStreamLine("Result = %d %d, %f %f %f", data.packetCounter, data.sampleTimeFine, gyroYaw, compassYaw - compassYawOffset, complementaryYaw);
+      packetCount++;
+    }
   }
 }
