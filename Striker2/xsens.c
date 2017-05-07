@@ -208,42 +208,42 @@ void parseMT2Data(struct MT2Data* out, char* data, int len)
 
 /*void PrintMTConfigurations(TUARTs uartPort)
 {
-MTMessage msg, sendMsg;
+	MTMessage msg, sendMsg;
 
-// Ensure there are no random messages from previous sessions
-// still in the tx buffer.
-flushTX(uartPort);
+	// Ensure there are no random messages from previous sessions
+	// still in the tx buffer.
+	flushTX(uartPort);
 
-// Go into config mode.
-sendMsg.mid = 0x30;
-sendMsg.len = 0x00;
-sendMTMessage(&sendMsg, uartPort);
+	// Go into config mode.
+	sendMsg.mid = 0x30;
+	sendMsg.len = 0x00;
+	sendMTMessage(&sendMsg, uartPort);
 
-wait1Msec(500);
+	wait1Msec(500);
 
-flushTX(uartPort);
+	flushTX(uartPort);
 
-// Get device serial number
-sendMsg.mid = 0x00;
-sendMsg.len = 0x00;
-sendMTMessage(&sendMsg, uartPort);
+	// Get device serial number
+	sendMsg.mid = 0x00;
+	sendMsg.len = 0x00;
+	sendMTMessage(&sendMsg, uartPort);
 
-writeDebugStreamLine("Getting MTi Device..");
+	writeDebugStreamLine("Getting MTi Device..");
 
-getMTMessage(&msg, uartPort);
-writeDebugStream("Serial Number: ");
-for (int i = 0; i < msg.len; i++) writeDebugStream("%x%x", (msg.data[i]>>4)&0xF, msg.data[i]&0xF);
-writeDebugStreamLine("");
+	getMTMessage(&msg, uartPort);
+	writeDebugStream("Serial Number: ");
+	for (int i = 0; i < msg.len; i++) writeDebugStream("%x%x", (msg.data[i]>>4)&0xF, msg.data[i]&0xF);
+	writeDebugStreamLine("");
 
-// Get product code
-sendMsg.mid = 0x1C;
-sendMsg.len = 0x00;
-sendMTMessage(&sendMsg, uartPort);
+	// Get product code
+	sendMsg.mid = 0x1C;
+	sendMsg.len = 0x00;
+	sendMTMessage(&sendMsg, uartPort);
 
-getMTMessage(&msg, uartPort);
-writeDebugStream("Product Code: ");
-for (int i = 0; i < msg.len; i++) writeDebugStream("%c", msg.data[i]);
-writeDebugStreamLine("");
+	getMTMessage(&msg, uartPort);
+	writeDebugStream("Product Code: ");
+	for (int i = 0; i < msg.len; i++) writeDebugStream("%c", msg.data[i]);
+	writeDebugStreamLine("");
 }
 */
 float gyroCalibYaw = 0;

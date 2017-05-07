@@ -48,23 +48,6 @@ void brake(int dir)
   drivePower(0);
 }
 
-void driveStraight(int distance, int speed)
-{
-  resetEncoders();
-
-  clearTimer(TIMEOUT_TIMER);
-  while (shouldKeepRunning())
-  {
-    leftDrive(speed);
-    rightDrive(speed);
-
-    int lEnc = getLeftEncoder();
-    int rEnc = getRightEncoder();
-
-    if (fabs(lEnc + rEnc) / 2 > distance) break;
-  }
-}
-
 void waitForLiftUp(int value)
 {
   clearTimer(TIMEOUT_TIMER);
@@ -74,17 +57,8 @@ void waitForLiftUp(int value)
   }
 }
 
-void waitForLiftDown(int value)
-{
-  clearTimer(TIMEOUT_TIMER);
-  while (shouldKeepRunning())
-  {
-    if (getLiftHeight() > value) break;
-  }
-}
-
 void driveCorrectedSmoothTurn(
-float targetAngle, int medianSpeed, int maxPIDOutput = 70)
+  float targetAngle, int medianSpeed, int maxPIDOutput = 70)
 {
   struct PID posPID;
 
@@ -107,31 +81,6 @@ float targetAngle, int medianSpeed, int maxPIDOutput = 70)
 
     leftDrive(medianSpeed - speed*sgn(medianSpeed));
     rightDrive(medianSpeed + speed*sgn(medianSpeed));
-
-    delay(10);
-  }
-}
-
-void driveOneWheel(float targetAngle, int pidTuning = PID_INPLACE_HANGING)
-{
-  struct PID posPID;
-
-  if (pidTuning == PID_INPLACE_HANGING) PIDInit(&posPID, 8, 0, 0.7);
-  posPID.maxOutput = 70;
-
-  ClearTimer(TIMEOUT_TIMER);
-  while (shouldKeepRunning())
-  {
-    // Break if close enough to target angle
-    float posError = limitTo180(targetAngle - GyroGetAngle());
-
-    if (abs(posError) <= 3) break;
-    if (abs(posError) <= 20 && abs(gyroYawRate) < 0.3) break;
-
-    float speed = PIDUpdate(&posPID, posError, 0.01);
-
-    leftDrive(-10);
-    rightDrive(speed);
 
     delay(10);
   }
@@ -180,9 +129,9 @@ void driveTurnInPlace(float targetAngle, int pidTuning = PID_INPLACE_TURN_NORMAL
 }
 
 int driveSmoothTurn(
-float speed,
-float targetAngularVelocity,
-float targetAngle)
+	float speed,
+	float targetAngularVelocity,
+	float targetAngle)
 {
   struct PID velPID;
   PIDInit(&velPID, 0.02, 0, 0);
@@ -244,14 +193,14 @@ task delayedDeploy()
 }
 
 int driveHoldHeading(
-int distance,
-int maxSpeed,
-float targetAngle,
-int type = TYPE_FORWARD,
-int accel_type = ACCEL_NONE,
-int accel_startspeed = 0,
-float kP = 2,
-int offset = 0)
+	int distance,
+	int maxSpeed,
+	float targetAngle,
+	int type = TYPE_FORWARD,
+	int accel_type = ACCEL_NONE,
+	int accel_startspeed = 0,
+	float kP = 2,
+	int offset = 0)
 {
   if (distance < 0) distance = -distance;
 
